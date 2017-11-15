@@ -589,4 +589,83 @@ void Octree::GeneralLocationEdge(float x1,float x2,float y1,float y2,float z1,fl
     float diffx=x1-x2;
     float diffy=y1-y2;
     float diffz=z1-z2;
+    float diffmax = max(abs(diffx), max(abs(diffy),abs(diffz)));
+    if(diffmax==abs(diffx))
+    {
+        float kyx = diffy/diffx;
+        float kzx = diffz/diffx;
+        int count=0;
+        int xi=x1-diffx/abs(diffx);
+        float yi = y1-diffy/abs(diffy)*abs(xi-x1+0.5)*abs(kyx);
+        float zi = z1-diffz/abs(diffz)*abs(xi-x1+0.5)*abs(kzx);
+        while(xi!=int(x2))
+        {
+            string strx = ChangeToBinary(xi);
+            string stry = ChangeToBinary(yi+count*kyx);
+            string strz = ChangeToBinary(zi+count*kzx);
+            ChangePoint(strx,stry,strz);
+            if(x1>x2)
+            {
+                xi--;
+                count--;
+            }
+            else
+            {
+                xi++;
+                count++;
+            }
+        }
+    }
+    else if(diffmax==abs(diffy))
+    {
+        float kxy = diffx/diffy;
+        float kzy = diffz/diffy;
+        int count=0;
+        int yi=y1-diffy/abs(diffy);
+        float xi = x1-diffx/abs(diffx)*abs(yi-y1+0.5)*abs(kxy);
+        float zi = z1-diffz/abs(diffz)*abs(yi-y1+0.5)*abs(kzy);
+        while(yi!=int(y2))
+        {
+            string strx = ChangeToBinary(xi+count*kxy);
+            string stry = ChangeToBinary(yi);
+            string strz = ChangeToBinary(zi+count*kzy);
+            ChangePoint(strx,stry,strz);
+            if(y1>y2)
+            {
+                yi--;
+                count--;
+            }
+            else
+            {
+                yi++;
+                count++;
+            }
+        }
+    }
+    else
+    {
+        float kxz = diffx/diffz;
+        float kyz = diffy/diffz;
+        int count=0;
+        int zi=z1-diffz/abs(diffz);
+        float xi = x1-diffx/abs(diffx)*abs(zi-z1+0.5)*abs(kxz);
+        float yi = y1-diffy/abs(diffy)*abs(zi-z1+0.5)*abs(kyz);
+        while(zi!=int(z2))
+        {
+            string strx = ChangeToBinary(xi+count*kxz);
+            string stry = ChangeToBinary(yi+count*kyz);
+            string strz = ChangeToBinary(zi);
+            ChangePoint(strx,stry,strz);
+            if(z1>z2)
+            {
+                zi--;
+                count--;
+            }
+            else
+            {
+                zi++;
+                count++;
+            }
+        }
+    }
 }
