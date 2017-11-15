@@ -72,6 +72,7 @@ class Octree
         void EdgeToOctree(vector<CVertex> VectorPoint,vector<CEdge> VectorEdge,float xmax,float xmin,float ymax,float ymin,float zmax,float zmin);
         void PerpendicularToSurfaceEdge(string x,string y,string z,string diff, int serial);
         void ParallelToSurfaceEdge(float a1,float a2,float b1,float b2,string c, int serial);//a1,a2 b1,b2 mean different point coordinate,c means the same coordinate of two point
+        void GeneralLocationEdge(float x1,float x2,float y1,float y2,float z1,float z2);
         void ChangePoint(string x,string y,string z);
         string ChangeCoordinate(float coordinate,float max,float min);
         unsigned int ChangeToDecimal(string binary);
@@ -373,7 +374,7 @@ void Octree::EdgeToOctree(vector<CVertex> VectorPoint, vector<CEdge> VectorEdge,
         else if(strz1==strz2)
             ParallelToSurfaceEdge(flx1,flx2,fly1,fly2,strz1,3);
         else
-            continue;
+            GeneralLocationEdge(flx1,flx2,fly1,fly2,flz1,flz2);
     }
 }
 
@@ -581,4 +582,11 @@ void Octree::ParallelToSurfaceEdge(float a1,float a2,float b1,float b2,string c,
             cout<<"error in ParallelToSurfaceEdge"<<endl;
             break;
     }
+}
+
+void Octree::GeneralLocationEdge(float x1,float x2,float y1,float y2,float z1,float z2)
+{
+    float diffx=x1-x2;
+    float diffy=y1-y2;
+    float diffz=z1-z2;
 }
