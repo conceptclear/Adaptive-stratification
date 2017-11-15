@@ -427,7 +427,7 @@ bool STLmodel::ReadSTLFile(const char *cfilename)
 void STLmodel::drawSTL(void)
 {
 	glColor3f(0.0, 0.4, 0.2);
-	for (int i = 0; i < m_VectorFacet.size(); i++)
+	for (unsigned long i = 0; i < m_VectorFacet.size(); i++)
 	{
 		glBegin(GL_LINE_LOOP);
 		glVertex3f(m_VectorPoint[m_VectorFacet[i].PointIndex[0]].m_Point[0], m_VectorPoint[m_VectorFacet[i].PointIndex[0]].m_Point[1], m_VectorPoint[m_VectorFacet[i].PointIndex[0]].m_Point[2]);
@@ -588,10 +588,10 @@ bool STLmodel::slice(float z)
 void STLmodel::drawslice(float z)
 {
 	glColor3f(0.0, 1.0, 0.2);
-	for (int i = 0; i < z_point.size(); i++)
+	for (unsigned long i = 0; i < z_point.size(); i++)
 	{
 		glBegin(GL_LINE_LOOP);
-		for (int j = 0; j < z_point[i].size(); j++)
+		for (unsigned long j = 0; j < z_point[i].size(); j++)
 		{
 			glVertex3f(z_point[i][j].x, z_point[i][j].y, z);
 		}
@@ -634,12 +634,12 @@ void STLmodel::drawsliceequalllayers(int layernumber)
 	else
 	{
 		float layerthickness = (z_max - z_min) / (layernumber - 1);
-		for (int i = 0; i < slicingdata.size(); i++)
+		for (unsigned long i = 0; i < slicingdata.size(); i++)
 		{
-			for (int j = 0; j < slicingdata[i].size(); j++)
+			for (unsigned long j = 0; j < slicingdata[i].size(); j++)
 			{
 				glBegin(GL_LINE_LOOP);
-				for (int k = 0; k < slicingdata[i][j].size(); k++)
+				for (unsigned long k = 0; k < slicingdata[i][j].size(); k++)
 				{
 					glVertex3f(slicingdata[i][j][k].x, slicingdata[i][j][k].y, z_min + i*layerthickness);
 				}
@@ -650,7 +650,7 @@ void STLmodel::drawsliceequalllayers(int layernumber)
 	
 }
 
-bool STLmodel::slicefacet(int layernumber)
+bool STLmodel::slicefacet(unsigned long layernumber)
 {
 	if (layernumber > slicingdata.size() || layernumber <= 0)
 	{
@@ -659,10 +659,10 @@ bool STLmodel::slicefacet(int layernumber)
 	}
 	else
 	{
-		for (int i = 0; i < slicingdata[layernumber].size(); i++)
+		for (unsigned long i = 0; i < slicingdata[layernumber].size(); i++)
 		{
 			set<int> facetnumber;
-			for (int j = 0; j < slicingdata[layernumber][i].size(); j++)
+			for (unsigned long j = 0; j < slicingdata[layernumber][i].size(); j++)
 			{
 				facetnumber.insert(m_VectorEdge[slicingdata[layernumber][i][j].edgenumber].FacetIndex[0]);
 				facetnumber.insert(m_VectorEdge[slicingdata[layernumber][i][j].edgenumber].FacetIndex[1]);
@@ -675,7 +675,7 @@ bool STLmodel::slicefacet(int layernumber)
 
 void STLmodel::drawslicefacet(void)
 {
-	for (int i = 0; i < slicefacetnumber.size(); i++)
+	for (unsigned long i = 0; i < slicefacetnumber.size(); i++)
 	{
 		set<int>::iterator it;
 		for (it = slicefacetnumber[i].begin(); it != slicefacetnumber[i].end(); it++)

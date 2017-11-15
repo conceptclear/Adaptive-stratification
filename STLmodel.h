@@ -24,7 +24,7 @@ public:
 	void setperspective(double eyex,double eyey,double eyez,double centrex,double centrey,double centrez,double upx,double upy,double upz); //设置视角
 	bool sliceequalllayers(int layernumber); //等层厚切片
 	void drawsliceequalllayers(int layernumber); //绘制等层厚切片
-	bool slicefacet(int layernumber); //计算某一层的被切面片
+	bool slicefacet(unsigned long layernumber); //计算某一层的被切面片
 	void drawslicefacet(void); //绘制被切面
     void drawAABB(void); //draw AABB box
     void VoxelizePoint(void); //voxelize the point
