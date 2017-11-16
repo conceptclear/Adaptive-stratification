@@ -389,7 +389,7 @@ void Octree::PerpendicularToSurfaceEdge(string x,string y,string z,string diff,i
                 xmin=ChangeToDecimal(diff);
             else
                 xmax=ChangeToDecimal(diff);
-            for(unsigned int i=xmin;i<=xmax;i++)
+            for(unsigned int i=xmin+1;i<xmax;i++)
             {
                 string xi = ChangeToBinary(i);
                 ChangePoint(xi,y,z);
@@ -402,7 +402,7 @@ void Octree::PerpendicularToSurfaceEdge(string x,string y,string z,string diff,i
                 ymin=ChangeToDecimal(diff);
             else
                 ymax=ChangeToDecimal(diff);
-            for(unsigned int i=ymin;i<=ymax;i++)
+            for(unsigned int i=ymin+1;i<ymax;i++)
             {
                 string yi = ChangeToBinary(i);
                 ChangePoint(x,yi,z);
@@ -415,7 +415,7 @@ void Octree::PerpendicularToSurfaceEdge(string x,string y,string z,string diff,i
                 zmin=ChangeToDecimal(diff);
             else
                 zmax=ChangeToDecimal(diff);
-            for(unsigned int i=zmin;i<=zmax;i++)
+            for(unsigned int i=zmin+1;i<zmax;i++)
             {
                 string zi = ChangeToBinary(i);
                 ChangePoint(x,y,zi);
