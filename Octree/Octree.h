@@ -79,15 +79,36 @@ class Octree
         //use iteration to delete the root
         void MakeOctree(int height);
         //set up an octree with all nodes out of the part
-        void PointToOctree(vector<CVertex> VectorPoint,float xmax,float xmin,float ymax,float ymin,float zmax,float zmin);
+        void Traverse(void);
+        //use perorder traversal
+        void PreOrder(OctreeNode *pRoot); //traverse the octree
+        void DisplayOctree(OctreeNode *pRoot); //draw
+        void DrawVoxel(string x,string y,string z);
+        int IsEmpty()
+        {return root==NULL?1:0;}
+        void PointToOctree(vector<CVertex> VectorPoint
+                ,float xmax,float xmin
+                ,float ymax,float ymin
+                ,float zmax,float zmin);
         //find the Vertex on the part
-        void EdgeToOctree(vector<CVertex> VectorPoint,vector<CEdge> VectorEdge,float xmax,float xmin,float ymax,float ymin,float zmax,float zmin);
+        void EdgeToOctree(vector<CEdge> VectorEdge
+                ,vector<CVertex> VectorPoint
+                ,float xmax,float xmin
+                ,float ymax,float ymin
+                ,float zmax,float zmin);
         //find the Edge on the part
         void PerpendicularToSurfaceEdge(string x,string y,string z,string diff, int serial);
         //find the special edge that is perpendicular to surface
-        void ParallelToSurfaceEdge(float a1,float a2,float b1,float b2,string c, int serial);//a1,a2 b1,b2 mean different point coordinate,c means the same coordinate of two point
+        void ParallelToSurfaceEdge(float a1,float a2,float b1,float b2,string c, int serial);
+        //a1,a2 b1,b2 mean different point coordinate,c means the same coordinate of two point
         void GeneralLocationEdge(float x1,float x2,float y1,float y2,float z1,float z2);
         //deal with the general edge
+        void FacetToOctree(vector<CFacet> VectorFacet
+                ,vector<CVertex> VectorPoint
+                ,float xmax,float xmin
+                ,float ymax,float ymin
+                ,float zmax,float zmin);
+        //find the facet on the part
         void ChangePoint(string x,string y,string z);
         //change this node flag to 0
         string ChangeCoordinate(float coordinate,float max,float min);
@@ -96,13 +117,6 @@ class Octree
         //change the binary into deciaml
         string ChangeToBinary(unsigned int decimal);
         //change the decimal into binary
-        void Traverse(void);
-        //use perorder traversal
-        void PreOrder(OctreeNode *pRoot); //traverse the octree
-        void DisplayOctree(OctreeNode *pRoot); //draw
-        void DrawVoxel(string x,string y,string z);
-        int IsEmpty()
-        {return root==NULL?1:0;}
     private:
         OctreeNode *root;
         int max_height;

@@ -70,7 +70,8 @@ int main(int argc, char *argv[])
 //	p.slicefacet(90);
 	tree.MakeOctree(depth);
     tree.PointToOctree(p.m_VectorPoint,p.xmax(),p.xmin(),p.ymax(),p.ymin(),p.zmax(),p.zmin());
-    tree.EdgeToOctree(p.m_VectorPoint,p.m_VectorEdge,p.xmax(),p.xmin(),p.ymax(),p.ymin(),p.zmax(),p.zmin());
+    tree.EdgeToOctree(p.m_VectorEdge,p.m_VectorPoint,p.xmax(),p.xmin(),p.ymax(),p.ymin(),p.zmax(),p.zmin());
+    tree.FacetToOctree(p.m_VectorFacet,p.m_VectorPoint,p.xmax(),p.xmin(),p.ymax(),p.ymin(),p.zmax(),p.zmin());
     
     WinWidth = 800;
 	WinHeight = 800;

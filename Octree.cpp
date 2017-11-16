@@ -254,7 +254,7 @@ void Octree::DrawVoxel(string x,string y,string z)
 //    cout<<voxelx<<":"<<voxely<<":"<<voxelz<<endl;
 }
 
-void Octree::EdgeToOctree(vector<CVertex> VectorPoint, vector<CEdge> VectorEdge,float xmax,float xmin,float ymax,float ymin,float zmax,float zmin)
+void Octree::EdgeToOctree(vector<CEdge> VectorEdge, vector<CVertex> VectorPoint,float xmax,float xmin,float ymax,float ymin,float zmax,float zmin)
 {
     for(int i=0;i<int(VectorEdge.size());i++)
     {
@@ -580,5 +580,35 @@ void Octree::GeneralLocationEdge(float x1,float x2,float y1,float y2,float z1,fl
                 count++;
             }
         }
+    }
+}
+
+void Octree::FacetToOctree(vector<CFacet> VectorFacet, vector <CVertex> VectorPoint,float xmax, float xmin, float ymax, float ymin, float zmax, float zmin)
+{
+    for(int i=0;i<int(VectorFacet.size());i++)
+    {
+        string strx1 = ChangeCoordinate(VectorPoint[VectorFacet[i].PointIndex[0]].m_Point[0],xmax,xmin);
+        string strx2 = ChangeCoordinate(VectorPoint[VectorFacet[i].PointIndex[1]].m_Point[0],xmax,xmin);
+        string strx3 = ChangeCoordinate(VectorPoint[VectorFacet[i].PointIndex[2]].m_Point[0],xmax,xmin);
+        string stry1 = ChangeCoordinate(VectorPoint[VectorFacet[i].PointIndex[0]].m_Point[1],ymax,ymin);
+        string stry2 = ChangeCoordinate(VectorPoint[VectorFacet[i].PointIndex[1]].m_Point[1],ymax,ymin);
+        string stry3 = ChangeCoordinate(VectorPoint[VectorFacet[i].PointIndex[2]].m_Point[1],ymax,ymin);
+        string strz1 = ChangeCoordinate(VectorPoint[VectorFacet[i].PointIndex[0]].m_Point[2],zmax,zmin);
+        string strz2 = ChangeCoordinate(VectorPoint[VectorFacet[i].PointIndex[1]].m_Point[2],zmax,zmin);
+        string strz3 = ChangeCoordinate(VectorPoint[VectorFacet[i].PointIndex[2]].m_Point[2],zmax,zmin);
+        //change the coordinate system
+        float flx1 = (VectorPoint[VectorFacet[i].PointIndex[0]].m_Point[0]-xmin)*pow(2,max_height-1)/(xmax-xmin);
+        float flx2 = (VectorPoint[VectorFacet[i].PointIndex[1]].m_Point[0]-xmin)*pow(2,max_height-1)/(xmax-xmin);
+        float flx3 = (VectorPoint[VectorFacet[i].PointIndex[2]].m_Point[0]-xmin)*pow(2,max_height-1)/(xmax-xmin);
+        float fly1 = (VectorPoint[VectorFacet[i].PointIndex[0]].m_Point[1]-ymin)*pow(2,max_height-1)/(ymax-ymin);
+        float fly2 = (VectorPoint[VectorFacet[i].PointIndex[1]].m_Point[1]-ymin)*pow(2,max_height-1)/(ymax-ymin);
+        float fly3 = (VectorPoint[VectorFacet[i].PointIndex[2]].m_Point[1]-ymin)*pow(2,max_height-1)/(ymax-ymin);
+        float flz1 = (VectorPoint[VectorFacet[i].PointIndex[0]].m_Point[2]-zmin)*pow(2,max_height-1)/(zmax-zmin);
+        float flz2 = (VectorPoint[VectorFacet[i].PointIndex[1]].m_Point[2]-zmin)*pow(2,max_height-1)/(zmax-zmin);
+        float flz3 = (VectorPoint[VectorFacet[i].PointIndex[2]].m_Point[2]-zmin)*pow(2,max_height-1)/(zmax-zmin);
+        // to find the special facet that 2 vertex in one voxel
+        if((strx1==strx2)&&(stry1==stry2)&&(strz1==strz2))continue;
+        if((strx2==strx3)&&(stry2==stry3)&&(strz2==strz3))continue;
+        if((strx1==strx3)&&(stry1==stry3)&&(strz1==strz3))continue;
     }
 }
