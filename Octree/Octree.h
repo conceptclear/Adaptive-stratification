@@ -13,6 +13,11 @@ using namespace std;
 
 class OctreeNode
 {
+    //declare the octree node class
+    //define back as 0,front as 1,left as 0,right as 1,bottom as 0,top as 1
+    //use right hand spiral rules
+    //define x as back and front direction, y as left and front direciton, z as top and bottom direction
+    //as an example, Front_Left_Top means 101,ChangeToDecimal is 5. So, the orderstr in this depth equals 5
     friend class Octree;
     public:
         OctreeNode():
@@ -41,8 +46,12 @@ class OctreeNode
                 Front_Right_Top(front_right_top){}
         ~OctreeNode(){}
     private:
-        string orderstr; //node coding
-        int flag; //flag
+        string orderstr; 
+        //node coding which can define the location of this node in Octree
+        int flag; 
+        //use -1 to define the node out of the part
+        //use 0 to define the node on the part
+        //use 1 to define the node in the part
         OctreeNode *Back_Left_Bottom;
         OctreeNode *Back_Left_Top;
         OctreeNode *Back_Right_Bottom;
@@ -67,17 +76,28 @@ class Octree
             DeleteRoot(root);
         }
         void DeleteRoot(OctreeNode *pRoot);
+        //use iteration to delete the root
         void MakeOctree(int height);
+        //set up an octree with all nodes out of the part
         void PointToOctree(vector<CVertex> VectorPoint,float xmax,float xmin,float ymax,float ymin,float zmax,float zmin);
+        //find the Vertex on the part
         void EdgeToOctree(vector<CVertex> VectorPoint,vector<CEdge> VectorEdge,float xmax,float xmin,float ymax,float ymin,float zmax,float zmin);
+        //find the Edge on the part
         void PerpendicularToSurfaceEdge(string x,string y,string z,string diff, int serial);
+        //find the special edge that is perpendicular to surface
         void ParallelToSurfaceEdge(float a1,float a2,float b1,float b2,string c, int serial);//a1,a2 b1,b2 mean different point coordinate,c means the same coordinate of two point
         void GeneralLocationEdge(float x1,float x2,float y1,float y2,float z1,float z2);
+        //deal with the general edge
         void ChangePoint(string x,string y,string z);
+        //change this node flag to 0
         string ChangeCoordinate(float coordinate,float max,float min);
+        //change the coordinate into binary
         unsigned int ChangeToDecimal(string binary);
+        //change the binary into deciaml
         string ChangeToBinary(unsigned int decimal);
+        //change the decimal into binary
         void Traverse(void);
+        //use perorder traversal
         void PreOrder(OctreeNode *pRoot); //traverse the octree
         void DisplayOctree(OctreeNode *pRoot); //draw
         void DrawVoxel(string x,string y,string z);
