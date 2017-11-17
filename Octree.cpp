@@ -273,7 +273,18 @@ void Octree::EdgeToOctree(vector<CEdge> VectorEdge, vector<CVertex> VectorPoint,
         float flz1 = (VectorPoint[VectorEdge[i].PointIndex[0]].m_Point[2]-zmin)*pow(2,max_height-1)/(zmax-zmin);
         float flz2 = (VectorPoint[VectorEdge[i].PointIndex[1]].m_Point[2]-zmin)*pow(2,max_height-1)/(zmax-zmin);
         // to find the special Edge which is perpendicular to the coordinate surface
-        if((strx1==strx2)&&(stry1==stry2)&&(strz1==strz2))continue;
+        EdgeChange(strx1,strx2,stry1,stry2,strz1,strz2,flx1,flx2,fly1,fly2,flz1,flz2);
+    }
+}
+
+void Octree::EdgeChange(string strx1,string strx2
+                ,string stry1,string stry2
+                ,string strz1,string strz2,
+                float flx1,float flx2,
+                float fly1,float fly2,
+                float flz1,float flz2)
+{
+        if((strx1==strx2)&&(stry1==stry2)&&(strz1==strz2))return;
         if((strx1==strx2)&&(stry1==stry2))
             PerpendicularToSurfaceEdge(strx1,stry1,strz1,strz2,3);
         else if((stry1==stry2)&&(strz1==strz2))
@@ -288,11 +299,11 @@ void Octree::EdgeToOctree(vector<CEdge> VectorEdge, vector<CVertex> VectorPoint,
             ParallelToSurfaceEdge(flx1,flx2,fly1,fly2,strz1,3);
         else
             GeneralLocationEdge(flx1,flx2,fly1,fly2,flz1,flz2);
-    }
 }
 
 void Octree::PerpendicularToSurfaceEdge(string x,string y,string z,string diff,int serial)
 {
+    m_OctreeEdge.clear();
     switch(serial)
     {
         case 1:
@@ -306,6 +317,11 @@ void Octree::PerpendicularToSurfaceEdge(string x,string y,string z,string diff,i
             {
                 string xi = ChangeToBinary(i);
                 ChangePoint(xi,y,z);
+                OctreePoint opoint;
+                opoint.x=xi;
+                opoint.y=y;
+                opoint.z=z;
+                m_OctreeEdge.push_back(opoint);
             }
             break;
         case 2:
@@ -319,6 +335,11 @@ void Octree::PerpendicularToSurfaceEdge(string x,string y,string z,string diff,i
             {
                 string yi = ChangeToBinary(i);
                 ChangePoint(x,yi,z);
+                OctreePoint opoint;
+                opoint.x=x;
+                opoint.y=yi;
+                opoint.z=z;
+                m_OctreeEdge.push_back(opoint);
             }
             break;
         case 3:
@@ -332,6 +353,11 @@ void Octree::PerpendicularToSurfaceEdge(string x,string y,string z,string diff,i
             {
                 string zi = ChangeToBinary(i);
                 ChangePoint(x,y,zi);
+                OctreePoint opoint;
+                opoint.x=x;
+                opoint.y=y;
+                opoint.z=zi;
+                m_OctreeEdge.push_back(opoint);
             }
             break;
         default:
@@ -342,6 +368,7 @@ void Octree::PerpendicularToSurfaceEdge(string x,string y,string z,string diff,i
 
 void Octree::ParallelToSurfaceEdge(float a1,float a2,float b1,float b2,string c,int serial)
 {
+    m_OctreeEdge.clear();
     float diffa = a1-a2;
     float diffb = b1-b2;
     //choose 0.5 position to decide 
@@ -359,6 +386,11 @@ void Octree::ParallelToSurfaceEdge(float a1,float a2,float b1,float b2,string c,
                     string stra = ChangeToBinary(ai);
                     string strb = ChangeToBinary(bi+count*k);
                     ChangePoint(c,stra,strb);
+                    OctreePoint opoint;
+                    opoint.x=c;
+                    opoint.y=stra;
+                    opoint.z=strb;
+                    m_OctreeEdge.push_back(opoint);
                     if(a1>a2)
                     {
                         ai--;
@@ -382,6 +414,11 @@ void Octree::ParallelToSurfaceEdge(float a1,float a2,float b1,float b2,string c,
                     string stra = ChangeToBinary(ai+count*k);
                     string strb = ChangeToBinary(bi);
                     ChangePoint(c,stra,strb);
+                    OctreePoint opoint;
+                    opoint.x=c;
+                    opoint.y=stra;
+                    opoint.z=strb;
+                    m_OctreeEdge.push_back(opoint);
                     if(b1>b2)
                     {
                         bi--;
@@ -407,6 +444,11 @@ void Octree::ParallelToSurfaceEdge(float a1,float a2,float b1,float b2,string c,
                     string stra = ChangeToBinary(ai);
                     string strb = ChangeToBinary(bi+count*k);
                     ChangePoint(stra,c,strb);
+                    OctreePoint opoint;
+                    opoint.x=stra;
+                    opoint.y=c;
+                    opoint.z=strb;
+                    m_OctreeEdge.push_back(opoint);
                     if(a1>a2)
                     {
                         ai--;
@@ -430,6 +472,11 @@ void Octree::ParallelToSurfaceEdge(float a1,float a2,float b1,float b2,string c,
                     string stra = ChangeToBinary(ai+count*k);
                     string strb = ChangeToBinary(bi);
                     ChangePoint(stra,c,strb);
+                    OctreePoint opoint;
+                    opoint.x=stra;
+                    opoint.y=c;
+                    opoint.z=strb;
+                    m_OctreeEdge.push_back(opoint);
                     if(b1>b2)
                     {
                         bi--;
@@ -455,6 +502,11 @@ void Octree::ParallelToSurfaceEdge(float a1,float a2,float b1,float b2,string c,
                     string stra = ChangeToBinary(ai);
                     string strb = ChangeToBinary(bi+count*k);
                     ChangePoint(stra,strb,c);
+                    OctreePoint opoint;
+                    opoint.x=stra;
+                    opoint.y=strb;
+                    opoint.z=c;
+                    m_OctreeEdge.push_back(opoint);
                     if(a1>a2)
                     {
                         ai--;
@@ -478,6 +530,11 @@ void Octree::ParallelToSurfaceEdge(float a1,float a2,float b1,float b2,string c,
                     string stra = ChangeToBinary(ai+count*k);
                     string strb = ChangeToBinary(bi);
                     ChangePoint(stra,strb,c);
+                    OctreePoint opoint;
+                    opoint.x=stra;
+                    opoint.y=strb;
+                    opoint.z=c;
+                    m_OctreeEdge.push_back(opoint);
                     if(b1>b2)
                     {
                         bi--;
@@ -499,6 +556,7 @@ void Octree::ParallelToSurfaceEdge(float a1,float a2,float b1,float b2,string c,
 
 void Octree::GeneralLocationEdge(float x1,float x2,float y1,float y2,float z1,float z2)
 {
+    m_OctreeEdge.clear();
     float diffx=x1-x2;
     float diffy=y1-y2;
     float diffz=z1-z2;
@@ -517,6 +575,11 @@ void Octree::GeneralLocationEdge(float x1,float x2,float y1,float y2,float z1,fl
             string stry = ChangeToBinary(yi+count*kyx);
             string strz = ChangeToBinary(zi+count*kzx);
             ChangePoint(strx,stry,strz);
+            OctreePoint opoint;
+            opoint.x=strx;
+            opoint.y=stry;
+            opoint.z=strz;
+            m_OctreeEdge.push_back(opoint);
             if(x1>x2)
             {
                 xi--;
@@ -543,6 +606,11 @@ void Octree::GeneralLocationEdge(float x1,float x2,float y1,float y2,float z1,fl
             string stry = ChangeToBinary(yi);
             string strz = ChangeToBinary(zi+count*kzy);
             ChangePoint(strx,stry,strz);
+            OctreePoint opoint;
+            opoint.x=strx;
+            opoint.y=stry;
+            opoint.z=strz;
+            m_OctreeEdge.push_back(opoint);
             if(y1>y2)
             {
                 yi--;
@@ -569,6 +637,11 @@ void Octree::GeneralLocationEdge(float x1,float x2,float y1,float y2,float z1,fl
             string stry = ChangeToBinary(yi+count*kyz);
             string strz = ChangeToBinary(zi);
             ChangePoint(strx,stry,strz);
+            OctreePoint opoint;
+            opoint.x=strx;
+            opoint.y=stry;
+            opoint.z=strz;
+            m_OctreeEdge.push_back(opoint);
             if(z1>z2)
             {
                 zi--;
@@ -610,5 +683,18 @@ void Octree::FacetToOctree(vector<CFacet> VectorFacet, vector <CVertex> VectorPo
         if((strx1==strx2)&&(stry1==stry2)&&(strz1==strz2))continue;
         if((strx2==strx3)&&(stry2==stry3)&&(strz2==strz3))continue;
         if((strx1==strx3)&&(stry1==stry3)&&(strz1==strz3))continue;
+        //to voxelize one edge
+        EdgeChange(strx1,strx2,stry1,stry2,strz1,strz2,flx1,flx2,fly1,fly2,flz1,flz2);
+        vector<OctreePoint> OctreeEdge = m_OctreeEdge;
+        for(int j=1;j<int(OctreeEdge.size())-1;j++)
+        {
+            float fledgex = ChangeToDecimal(OctreeEdge[j].x)+0.5;
+            float fledgey = ChangeToDecimal(OctreeEdge[j].y)+0.5;
+            float fledgez = ChangeToDecimal(OctreeEdge[j].z)+0.5;
+            EdgeChange(strx3,OctreeEdge[j].x,stry3,OctreeEdge[j].y,strz3,OctreeEdge[j].z,flx3,fledgex,fly3,fledgey,flz3,fledgez);
+        }
+        EdgeChange(strx1,strx3,stry1,stry3,strz1,strz3,flx1,flx3,fly1,fly3,flz1,flz3);
+        EdgeChange(strx3,strx2,stry3,stry2,strz3,strz2,flx3,flx2,fly3,fly2,flz3,flz2);
     }
 }
+
