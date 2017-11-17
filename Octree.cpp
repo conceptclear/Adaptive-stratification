@@ -251,6 +251,43 @@ void Octree::DrawVoxel(string x,string y,string z)
     glVertex3i(voxelx,voxely+1,voxelz);
     glVertex3i(voxelx,voxely+1,voxelz+1);
     glEnd();
+    glColor3f(0.0f,1.0f,1.0f);
+    glBegin(GL_POLYGON);
+    glVertex3i(voxelx,voxely,voxelz);
+    glVertex3i(voxelx+1,voxely,voxelz);
+    glVertex3i(voxelx+1,voxely+1,voxelz);
+    glVertex3i(voxelx,voxely+1,voxelz);
+    glEnd();
+    glBegin(GL_POLYGON);
+    glVertex3i(voxelx,voxely,voxelz+1);
+    glVertex3i(voxelx+1,voxely,voxelz+1);
+    glVertex3i(voxelx+1,voxely+1,voxelz+1);
+    glVertex3i(voxelx,voxely+1,voxelz+1);
+    glEnd();
+    glBegin(GL_POLYGON);
+    glVertex3i(voxelx,voxely,voxelz);
+    glVertex3i(voxelx,voxely,voxelz+1);
+    glVertex3i(voxelx+1,voxely,voxelz+1);
+    glVertex3i(voxelx+1,voxely,voxelz);
+    glEnd();
+    glBegin(GL_POLYGON);
+    glVertex3i(voxelx+1,voxely+1,voxelz);
+    glVertex3i(voxelx+1,voxely+1,voxelz+1);
+    glVertex3i(voxelx,voxely+1,voxelz+1);
+    glVertex3i(voxelx,voxely+1,voxelz);
+    glEnd();
+    glBegin(GL_POLYGON);
+    glVertex3i(voxelx+1,voxely+1,voxelz);
+    glVertex3i(voxelx+1,voxely+1,voxelz+1);
+    glVertex3i(voxelx+1,voxely,voxelz+1);
+    glVertex3i(voxelx+1,voxely,voxelz);
+    glEnd();
+    glBegin(GL_POLYGON);
+    glVertex3i(voxelx,voxely+1,voxelz);
+    glVertex3i(voxelx,voxely+1,voxelz+1);
+    glVertex3i(voxelx,voxely,voxelz+1);
+    glVertex3i(voxelx,voxely,voxelz);
+    glEnd();
 //    cout<<voxelx<<":"<<voxely<<":"<<voxelz<<endl;
 }
 
@@ -686,6 +723,7 @@ void Octree::FacetToOctree(vector<CFacet> VectorFacet, vector <CVertex> VectorPo
         //to voxelize one edge
         EdgeChange(strx1,strx2,stry1,stry2,strz1,strz2,flx1,flx2,fly1,fly2,flz1,flz2);
         vector<OctreePoint> OctreeEdge = m_OctreeEdge;
+        //exist bug
         for(int j=1;j<int(OctreeEdge.size())-1;j++)
         {
             float fledgex = ChangeToDecimal(OctreeEdge[j].x)+0.5;

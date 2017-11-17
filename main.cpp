@@ -17,7 +17,7 @@ void drawSTL(void)
 
     p.setperspective(sin(angle*PI/180),cos(angle*PI/180),heightz,0,0,0,0,0,1);
 	p.drawSTL();
-    p.drawAABB();
+//    p.drawAABB();
     glTranslatef(p.xmin(),p.ymin(),p.zmin());
     glScalef((p.xmax()-p.xmin())/pow(2,depth-1),(p.ymax()-p.ymin())/pow(2,depth-1),(p.zmax()-p.zmin())/pow(2,depth-1));
     tree.Traverse();
