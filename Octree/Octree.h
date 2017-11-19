@@ -123,6 +123,8 @@ class Octree
         void GeneralLocationEdge(float x1,float x2
                 ,float y1,float y2
                 ,float z1,float z2);
+        //use supercoverline to fullfill the inner place
+        void SuperCoverLine(float x1,float x2,float y1,float y2,float z1,float z2);
         //deal with the general edge
         void FacetToOctree(vector<CFacet> VectorFacet
                 ,vector<CVertex> VectorPoint

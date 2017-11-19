@@ -136,7 +136,6 @@ void Octree::ChangePoint(string x,string y,string z)
 string Octree::ChangeCoordinate(float coordinate,float max,float min)
 {
     unsigned int data = (coordinate-min)*pow(2,max_height-1)/(max-min);
-    if (data==pow(2,max_height-1))data--;
 //    cout<<data<<endl;
     string output;
     output=ChangeToBinary(data);
@@ -147,6 +146,7 @@ string Octree::ChangeToBinary(unsigned int decimal)
 {
     string output;
     output="";
+    if (decimal==pow(2,max_height-1))decimal--;
     for(int count=max_height-1;count--;decimal=decimal/2)
     {
         output=output+(decimal%2?"1":"0");
@@ -708,6 +708,30 @@ void Octree::GeneralLocationEdge(float x1,float x2,float y1,float y2,float z1,fl
     }
 }
 
+void Octree::SuperCoverLine(float flx1,float flx2,float fly1,float fly2,float flz1,float flz2)
+{
+        if((flx1==flx2)&&(fly1==fly2)&&(flz1==flz2))return;
+        if((flx1==flx2)&&(fly1==fly2))
+            PerpendicularToSurfaceEdge(flx1,fly1,flz1,flz2,3);
+        else if((fly1==fly2)&&(flz1==flz2))
+            PerpendicularToSurfaceEdge(flx1,fly1,flz1,flx2,1);
+        else if((flx1==flx2)&&(flz1==flz2))
+            PerpendicularToSurfaceEdge(flx1,fly1,flz1,fly2,2);
+        else if(flx1==flx2)
+            ParallelToSurfaceEdge(fly1,fly2,flz1,flz2,flx1,1);
+        else if(fly1==fly2)
+            ParallelToSurfaceEdge(flx1,flx2,flz1,flz2,fly1,2);
+        else if(flz1==flz2)
+            ParallelToSurfaceEdge(flx1,flx2,fly1,fly2,flz1,3);
+        else
+            GeneralLocationEdge(flx1,flx2,fly1,fly2,flz1,flz2);
+}
+
+
+void Octree::ParallelToSurfaceEdgeSC(float a1,float a2,float b1,float b2,float c, int serial)
+{
+}
+
 void Octree::FacetToOctree(vector<CFacet> VectorFacet, vector <CVertex> VectorPoint,float xmax, float xmin, float ymax, float ymin, float zmax, float zmin)
 {
     for(int i=0;i<int(VectorFacet.size());i++)
@@ -727,10 +751,12 @@ void Octree::FacetToOctree(vector<CFacet> VectorFacet, vector <CVertex> VectorPo
         vector<OctreePoint> OctreeEdge = m_OctreeEdge;
         //exist bug
         //here we need to use supercover line
-        for(int j=0;j<int(OctreeEdge.size());j++)
+        /*
+        for(int j=1;j<int(OctreeEdge.size());j++)
         {
             EdgeChange(flx3,OctreeEdge[j].x,fly3,OctreeEdge[j].y,flz3,OctreeEdge[j].z);
         }
+        */
         EdgeChange(flx1,flx3,fly1,fly3,flz1,flz3);
         EdgeChange(flx3,flx2,fly3,fly2,flz3,flz2);
     }
