@@ -16,9 +16,9 @@ class OctreePoint
     public:
         friend class Octree;
     private:
-        string x;
-        string y;
-        string z;
+        float x;
+        float y;
+        float z;
 };
 
 class OctreeNode
@@ -107,20 +107,18 @@ class Octree
                 ,float ymax,float ymin
                 ,float zmax,float zmin);
         //Change a single edge into voxel
-        void EdgeChange(string strx1,string strx2
-                ,string stry1,string stry2
-                ,string strz1,string strz2,
+        void EdgeChange(
                 float flx1,float flx2,
                 float fly1,float fly2,
                 float flz1,float flz2);
         //find the Edge on the part
-        void PerpendicularToSurfaceEdge(string x,string y
-                ,string z,string diff
+        void PerpendicularToSurfaceEdge(float x,float y
+                ,float z,float diff
                 , int serial);
         //find the special edge that is perpendicular to surface
         void ParallelToSurfaceEdge(float a1,float a2
                 ,float b1,float b2
-                ,string c, int serial);
+                ,float c, int serial);
         //a1,a2 b1,b2 mean different point coordinate,c means the same coordinate of two point
         void GeneralLocationEdge(float x1,float x2
                 ,float y1,float y2
