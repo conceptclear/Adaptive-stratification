@@ -718,18 +718,129 @@ void Octree::SuperCoverLine(float flx1,float flx2,float fly1,float fly2,float fl
         else if((flx1==flx2)&&(flz1==flz2))
             PerpendicularToSurfaceEdge(flx1,fly1,flz1,fly2,2);
         else if(flx1==flx2)
-            ParallelToSurfaceEdge(fly1,fly2,flz1,flz2,flx1,1);
+            ParallelToSurfaceEdgeSC(fly1,fly2,flz1,flz2,flx1,1);
         else if(fly1==fly2)
-            ParallelToSurfaceEdge(flx1,flx2,flz1,flz2,fly1,2);
+            ParallelToSurfaceEdgeSC(flx1,flx2,flz1,flz2,fly1,2);
         else if(flz1==flz2)
-            ParallelToSurfaceEdge(flx1,flx2,fly1,fly2,flz1,3);
-        else
-            GeneralLocationEdge(flx1,flx2,fly1,fly2,flz1,flz2);
+            ParallelToSurfaceEdgeSC(flx1,flx2,fly1,fly2,flz1,3);
+//        else
+//            GeneralLocationEdge(flx1,flx2,fly1,fly2,flz1,flz2);
 }
 
 
 void Octree::ParallelToSurfaceEdgeSC(float a1,float a2,float b1,float b2,float c, int serial)
 {
+    m_OctreeEdge.clear();
+    float diffa=a1-a2;
+    float diffb=b1-b2;
+    float absa=abs(diffa);
+    float absb=abs(diffb);
+    int sign_a=diffa>0?1:-1;
+    int sign_b=diffb>0?1:-1;
+    OctreePoint point;
+    string strx,stry,strz;
+    switch(serial)
+    {
+        case 1:
+            {
+                point.x = c;
+                point.y = a2;
+                point.z = b2;
+                strx=ChangeToBinary(c);
+                for(float yi=0, zi=0;yi<absa||zi<absb;)
+                {
+                    if((0.5+yi)/absa==(0.5+zi)/absb)
+                    {
+                        point.y+= sign_a;
+                        point.z+= sign_b;
+                        yi++;
+                        zi++;
+                    }
+                    else if((0.5+yi)/absa<(0.5+zi)/absb)
+                    {
+                        point.y+= sign_a;
+                        yi++;
+                    }
+                    else
+                    {
+                        point.z+= sign_b;
+                        zi++;
+                    }
+                    stry=ChangeToBinary(point.y);
+                    strz=ChangeToBinary(point.z);
+                    ChangePoint(strx,stry,strz);
+                    m_OctreeEdge.push_back(point);
+                }
+            }
+            break;
+        case 2:
+            {
+                point.x = a2;
+                point.y = c;
+                point.z = b2;
+                stry=ChangeToBinary(c);
+                for(float xi=0, zi=0;xi<absa||zi<absb;)
+                {
+                    if((0.5+xi)/absa==(0.5+zi)/absb)
+                    {
+                        point.x+= sign_a;
+                        point.z+= sign_b;
+                        xi++;
+                        zi++;
+                    }
+                    else if((0.5+xi)/absa<(0.5+zi)/absb)
+                    {
+                        point.x+= sign_a;
+                        xi++;
+                    }
+                    else
+                    {
+                        point.z+= sign_b;
+                        zi++;
+                    }
+                    strx=ChangeToBinary(point.x);
+                    strz=ChangeToBinary(point.z);
+                    ChangePoint(strx,stry,strz);
+                    m_OctreeEdge.push_back(point);
+                }
+            }
+            break;
+        case 3:
+            {
+                point.x = a2;
+                point.y = b2;
+                point.z = c;
+                strz=ChangeToBinary(c);
+                for(float xi=0, yi=0;xi<absa||yi<absb;)
+                {
+                    if((0.5+xi)/absa==(0.5+yi)/absb)
+                    {
+                        point.x+= sign_a;
+                        point.y+= sign_b;
+                        xi++;
+                        yi++;
+                    }
+                    else if((0.5+xi)/absa<(0.5+yi)/absb)
+                    {
+                        point.x+= sign_a;
+                        xi++;
+                    }
+                    else
+                    {
+                        point.y+= sign_b;
+                        yi++;
+                    }
+                    strx=ChangeToBinary(point.x);
+                    stry=ChangeToBinary(point.y);
+                    ChangePoint(strx,stry,strz);
+                    m_OctreeEdge.push_back(point);
+                }
+            }
+            break;
+        default:
+            cout<<"error occured in ParallelToSurfaceEdgeSC"<<endl;
+            break;
+    }
 }
 
 void Octree::FacetToOctree(vector<CFacet> VectorFacet, vector <CVertex> VectorPoint,float xmax, float xmin, float ymax, float ymin, float zmax, float zmin)
@@ -751,12 +862,10 @@ void Octree::FacetToOctree(vector<CFacet> VectorFacet, vector <CVertex> VectorPo
         vector<OctreePoint> OctreeEdge = m_OctreeEdge;
         //exist bug
         //here we need to use supercover line
-        /*
         for(int j=1;j<int(OctreeEdge.size());j++)
         {
-            EdgeChange(flx3,OctreeEdge[j].x,fly3,OctreeEdge[j].y,flz3,OctreeEdge[j].z);
+            SuperCoverLine(flx3,OctreeEdge[j].x,fly3,OctreeEdge[j].y,flz3,OctreeEdge[j].z);
         }
-        */
         EdgeChange(flx1,flx3,fly1,fly3,flz1,flz3);
         EdgeChange(flx3,flx2,fly3,fly2,flz3,flz2);
     }

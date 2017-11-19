@@ -125,6 +125,10 @@ class Octree
                 ,float z1,float z2);
         //use supercoverline to fullfill the inner place
         void SuperCoverLine(float x1,float x2,float y1,float y2,float z1,float z2);
+        //find the special edge that is perpendicular to surface by using SuperCoverLine
+        void ParallelToSurfaceEdgeSC(float a1,float a2
+                ,float b1,float b2
+                ,float c, int serial);
         //deal with the general edge
         void FacetToOctree(vector<CFacet> VectorFacet
                 ,vector<CVertex> VectorPoint
