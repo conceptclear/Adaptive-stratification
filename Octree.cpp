@@ -337,7 +337,7 @@ void Octree::PerpendicularToSurfaceEdge(float x,float y,float z,float diff,int s
         case 1:
             {
             unsigned int xmax,xmin;
-            xmin = xmax = x;
+            xmin = xmax = (unsigned int)x;
             string yi = ChangeToBinary(y);
             string zi = ChangeToBinary(z);
             if(xmin>(unsigned int)(diff))
@@ -359,7 +359,7 @@ void Octree::PerpendicularToSurfaceEdge(float x,float y,float z,float diff,int s
         case 2:
             {
             unsigned int ymax,ymin;
-            ymin = ymax = y;
+            ymin = ymax =(unsigned int)y;
             string xi = ChangeToBinary(x);
             string zi = ChangeToBinary(z);
             if(ymin>(unsigned int)(diff))
@@ -372,7 +372,7 @@ void Octree::PerpendicularToSurfaceEdge(float x,float y,float z,float diff,int s
                 ChangePoint(xi,yi,zi);
                 OctreePoint opoint;
                 opoint.x=x;
-                opoint.y=y;
+                opoint.y=i;
                 opoint.z=z;
                 m_OctreeEdge.push_back(opoint);
             }
@@ -381,7 +381,7 @@ void Octree::PerpendicularToSurfaceEdge(float x,float y,float z,float diff,int s
         case 3:
             {
             unsigned int zmax,zmin;
-            zmin = zmax = z;
+            zmin = zmax =(unsigned int)z;
             string xi = ChangeToBinary(x);
             string yi = ChangeToBinary(y);
             if(zmin>(unsigned int)(diff))
@@ -395,7 +395,7 @@ void Octree::PerpendicularToSurfaceEdge(float x,float y,float z,float diff,int s
                 OctreePoint opoint;
                 opoint.x=x;
                 opoint.y=y;
-                opoint.z=z;
+                opoint.z=i;
                 m_OctreeEdge.push_back(opoint);
             }
             }
@@ -727,7 +727,7 @@ void Octree::SuperCoverLine(float flx1,float flx2,float fly1,float fly2,float fl
 //            GeneralLocationEdge(flx1,flx2,fly1,fly2,flz1,flz2);
 }
 
-
+/*
 void Octree::ParallelToSurfaceEdgeSC(float a1,float a2,float b1,float b2,float c, int serial)
 {
     m_OctreeEdge.clear();
@@ -741,13 +741,14 @@ void Octree::ParallelToSurfaceEdgeSC(float a1,float a2,float b1,float b2,float c
     string strx,stry,strz;
     switch(serial)
     {
+        //problem is that point may not be at the centre of the voxel
         case 1:
             {
                 point.x = c;
                 point.y = a2;
                 point.z = b2;
                 strx=ChangeToBinary(c);
-                for(float yi=0, zi=0;yi<absa||zi<absb;)
+                for(float yi=0, zi=0;yi<int(absa)||zi<int(absb);)
                 {
                     if((0.5+yi)/absa==(0.5+zi)/absb)
                     {
@@ -766,6 +767,8 @@ void Octree::ParallelToSurfaceEdgeSC(float a1,float a2,float b1,float b2,float c
                         point.z+= sign_b;
                         zi++;
                     }
+                    if(yi==int(absa)&&zi==int(absb))
+                        break;
                     stry=ChangeToBinary(point.y);
                     strz=ChangeToBinary(point.z);
                     ChangePoint(strx,stry,strz);
@@ -779,7 +782,7 @@ void Octree::ParallelToSurfaceEdgeSC(float a1,float a2,float b1,float b2,float c
                 point.y = c;
                 point.z = b2;
                 stry=ChangeToBinary(c);
-                for(float xi=0, zi=0;xi<absa||zi<absb;)
+                for(float xi=0, zi=0;xi<int(absa)||zi<int(absb);)
                 {
                     if((0.5+xi)/absa==(0.5+zi)/absb)
                     {
@@ -798,6 +801,8 @@ void Octree::ParallelToSurfaceEdgeSC(float a1,float a2,float b1,float b2,float c
                         point.z+= sign_b;
                         zi++;
                     }
+                    if(xi==int(absa)&&zi==int(absb))
+                        break;
                     strx=ChangeToBinary(point.x);
                     strz=ChangeToBinary(point.z);
                     ChangePoint(strx,stry,strz);
@@ -811,7 +816,7 @@ void Octree::ParallelToSurfaceEdgeSC(float a1,float a2,float b1,float b2,float c
                 point.y = b2;
                 point.z = c;
                 strz=ChangeToBinary(c);
-                for(float xi=0, yi=0;xi<absa||yi<absb;)
+                for(float xi=0, yi=0;xi<int(absa)||yi<int(absb);)
                 {
                     if((0.5+xi)/absa==(0.5+yi)/absb)
                     {
@@ -830,6 +835,8 @@ void Octree::ParallelToSurfaceEdgeSC(float a1,float a2,float b1,float b2,float c
                         point.y+= sign_b;
                         yi++;
                     }
+                    if(xi==int(absa)&&yi==int(absb))
+                        break;
                     strx=ChangeToBinary(point.x);
                     stry=ChangeToBinary(point.y);
                     ChangePoint(strx,stry,strz);
@@ -842,6 +849,7 @@ void Octree::ParallelToSurfaceEdgeSC(float a1,float a2,float b1,float b2,float c
             break;
     }
 }
+*/
 
 void Octree::FacetToOctree(vector<CFacet> VectorFacet, vector <CVertex> VectorPoint,float xmax, float xmin, float ymax, float ymin, float zmax, float zmin)
 {
@@ -862,7 +870,7 @@ void Octree::FacetToOctree(vector<CFacet> VectorFacet, vector <CVertex> VectorPo
         vector<OctreePoint> OctreeEdge = m_OctreeEdge;
         //exist bug
         //here we need to use supercover line
-        for(int j=1;j<int(OctreeEdge.size());j++)
+        for(int j=0;j<int(OctreeEdge.size());j++)
         {
             SuperCoverLine(flx3,OctreeEdge[j].x,fly3,OctreeEdge[j].y,flz3,OctreeEdge[j].z);
         }
@@ -871,3 +879,175 @@ void Octree::FacetToOctree(vector<CFacet> VectorFacet, vector <CVertex> VectorPo
     }
 }
 
+void Octree::ParallelToSurfaceEdgeSC(float a1,float a2,float b1,float b2,float c,int serial)
+{
+    float diffa = a1-a2;
+    float diffb = b1-b2;
+    int absa = abs(diffa);
+    int absb = abs(diffb);
+    int sign_a = diffa>0?1:-1;
+    int sign_b = diffb>0?1:-1;
+    //find the every intersection of the long side 
+    switch(serial)
+    {
+        case 1:
+            {
+            if(absa>=absb)
+            {
+                float k =diffb/diffa;
+                int ai = a1>a2?(int(a2)+1):int(ceil(a2)-1);
+                float bi = b2+k*(1.0*ai-a2);
+                string strc = ChangeToBinary(c);
+                while(ai!=int(a1))
+                {
+                    string stra = ChangeToBinary(ai-1);
+                    string strb = ChangeToBinary(bi);
+                    ChangePoint(strc,stra,strb);
+                    stra = ChangeToBinary(ai);
+                    ChangePoint(strc,stra,strb);
+                    if(bi-int(bi)==0)
+                    {
+                        strb = ChangeToBinary(bi-1);
+                        ChangePoint(strc,stra,strb);
+                        stra = ChangeToBinary(ai-1);
+                        ChangePoint(strc,stra,strb);
+                    }
+                    ai+=sign_a;
+                    bi+=sign_b*abs(k);
+                }
+            }
+            else
+            {
+                float k =diffa/diffb;
+                int bi = b1>b2?(int(b2)+1):int(ceil(b2)-1);
+                float ai = a2+k*(1.0*bi-b2);
+                string strc = ChangeToBinary(c);
+                while(bi!=int(b1))
+                {
+                    string stra = ChangeToBinary(ai);
+                    string strb = ChangeToBinary(bi-1);
+                    ChangePoint(strc,stra,strb);
+                    strb = ChangeToBinary(bi);
+                    ChangePoint(strc,stra,strb);
+                    if(ai-int(ai)==0)
+                    {
+                        stra = ChangeToBinary(ai-1);
+                        ChangePoint(strc,stra,strb);
+                        strb = ChangeToBinary(bi-1);
+                        ChangePoint(strc,stra,strb);
+                    }
+                    ai+=sign_a*abs(k);
+                    bi+=sign_b;
+                }
+            }
+            }
+            break;
+        case 2:
+            {
+            if(absa>=absb)
+            {
+                float k =diffb/diffa;
+                int ai = a1>a2?(int(a2)+1):int(ceil(a2)-1);
+                float bi = b2+k*(1.0*ai-a2);
+                string strc = ChangeToBinary(c);
+                while(ai!=int(a1))
+                {
+                    string stra = ChangeToBinary(ai-1);
+                    string strb = ChangeToBinary(bi);
+                    ChangePoint(stra,strc,strb);
+                    stra = ChangeToBinary(ai);
+                    ChangePoint(stra,strc,strb);
+                    if(bi-int(bi)==0)
+                    {
+                        strb = ChangeToBinary(bi-1);
+                        ChangePoint(stra,strc,strb);
+                        stra = ChangeToBinary(ai-1);
+                        ChangePoint(stra,strc,strb);
+                    }
+                    ai+=sign_a;
+                    bi+=sign_b*abs(k);
+                }
+            }
+            else
+            {
+                float k =diffa/diffb;
+                int bi = b1>b2?(int(b2)+1):int(ceil(b2)-1);
+                float ai = a2+k*(1.0*bi-b2);
+                string strc = ChangeToBinary(c);
+                while(bi!=int(b1))
+                {
+                    string stra = ChangeToBinary(ai);
+                    string strb = ChangeToBinary(bi-1);
+                    ChangePoint(stra,strc,strb);
+                    strb = ChangeToBinary(bi);
+                    ChangePoint(stra,strc,strb);
+                    if(ai-int(ai)==0)
+                    {
+                        stra = ChangeToBinary(ai-1);
+                        ChangePoint(stra,strc,strb);
+                        strb = ChangeToBinary(bi-1);
+                        ChangePoint(stra,strc,strb);
+                    }
+                    ai+=sign_a*abs(k);
+                    bi+=sign_b;
+                }
+            }
+            }
+            break;
+        case 3:
+            {
+            if(absa>=absb)
+            {
+                float k =diffb/diffa;
+                int ai = a1>a2?(int(a2)+1):int(ceil(a2)-1);
+                float bi = b2+k*(1.0*ai-a2);
+                string strc = ChangeToBinary(c);
+                while(ai!=int(a1))
+                {
+                    string stra = ChangeToBinary(ai-1);
+                    string strb = ChangeToBinary(bi);
+                    ChangePoint(stra,strb,strc);
+                    stra = ChangeToBinary(ai);
+                    ChangePoint(stra,strb,strc);
+                    if(bi-int(bi)==0)
+                    {
+                        strb = ChangeToBinary(bi-1);
+                        ChangePoint(stra,strb,strc);
+                        stra = ChangeToBinary(ai-1);
+                        ChangePoint(stra,strb,strc);
+                    }
+                    ai+=sign_a;
+                    bi+=sign_b*abs(k);
+                }
+            }
+            else
+            {
+                float k =diffa/diffb;
+                int bi = b1>b2?(int(b2)+1):int(ceil(b2)-1);
+                float ai = a2+k*(1.0*bi-b2);
+                string strc = ChangeToBinary(c);
+                while(bi!=int(b1))
+                {
+                    string stra = ChangeToBinary(ai);
+                    string strb = ChangeToBinary(bi-1);
+                    ChangePoint(stra,strb,strc);
+                    strb = ChangeToBinary(bi);
+                    ChangePoint(stra,strb,strc);
+                    if(ai-int(ai)==0)
+                    {
+                        stra = ChangeToBinary(ai-1);
+                        ChangePoint(stra,strb,strc);
+                        strb = ChangeToBinary(bi-1);
+                        ChangePoint(stra,strb,strc);
+                    }
+                    ai+=sign_a*abs(k);
+                    bi+=sign_b;
+                }
+            }
+            }
+            break;
+        default:
+            cout<<"error occured in ParallelToSurfaceEdgeSC"<<endl;
+            break;
+    }
+}
