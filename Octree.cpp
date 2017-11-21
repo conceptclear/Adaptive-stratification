@@ -695,7 +695,7 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                     opoint.y = CheckDecimal(opoint.y);
                     opoint.y = diffy>0?(floor(opoint.y)+1):(floor(opoint.y));
                     opoint.z = diffz/diffy*(opoint.y-point2.y)+point2.z;
-                    float flag = diffy<=0?(floor(point1.y)+1):(floor(point1.y));
+                    float flag = diffy<=0?(floor(point1.y)):(floor(point1.y)+1);
                     while(opoint.y!=flag)
                     {
                         stry=ChangeToBinary(opoint.y-1);
@@ -719,7 +719,7 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                     opoint.z = CheckDecimal(opoint.z);
                     opoint.z = diffz>0?(floor(opoint.z)+1):(floor(opoint.z));
                     opoint.y = diffy/diffz*(opoint.z-point2.z)+point2.y;
-                    float flag = diffz<=0?(floor(point1.z)+1):(floor(point1.z));
+                    float flag = diffz<=0?(floor(point1.z)):(floor(point1.z)+1);
                     while(opoint.z!=flag)
                     {
                         strz=ChangeToBinary(opoint.z-1);
@@ -747,7 +747,7 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                     opoint.x = CheckDecimal(opoint.x);
                     opoint.x = diffx>0?(floor(opoint.x)+1):(floor(opoint.x));
                     opoint.z = diffz/diffx*(opoint.x-point2.x)+point2.z;
-                    float flag = diffx<=0?(floor(point1.x)+1):(floor(point1.x));
+                    float flag = diffx<=0?(floor(point1.x)):(floor(point1.x)+1);
                     while(opoint.x!=flag)
                     {
                         strx=ChangeToBinary(opoint.x-1);
@@ -771,7 +771,7 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                     opoint.z = CheckDecimal(opoint.z);
                     opoint.z = diffz>0?(floor(opoint.z)+1):(floor(opoint.z));
                     opoint.x = diffx/diffz*(opoint.z-point2.z)+point2.x;
-                    float flag = diffz<=0?(floor(point1.z)+1):(floor(point1.z));
+                    float flag = diffz<=0?(floor(point1.z)):(floor(point1.z)+1);
                     while(opoint.z!=flag)
                     {
                         strz=ChangeToBinary(opoint.z-1);
@@ -799,7 +799,7 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                     opoint.x = CheckDecimal(opoint.x);
                     opoint.x = diffx>0?(floor(opoint.x)+1):(floor(opoint.x));
                     opoint.y = diffy/diffx*(opoint.x-point2.x)+point2.y;
-                    float flag = diffx<=0?(floor(point1.x)+1):(floor(point1.x));
+                    float flag = diffx<=0?(floor(point1.x)):(floor(point1.x)+1);
                     while(opoint.x!=flag)
                     {
                         strx=ChangeToBinary(opoint.x-1);
@@ -823,7 +823,7 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                     opoint.y = CheckDecimal(opoint.y);
                     opoint.y = diffy>0?(floor(opoint.y)+1):(floor(opoint.y));
                     opoint.x = diffx/diffy*(opoint.y-point2.y)+point2.x;
-                    float flag = diffy<=0?(floor(point1.y)+1):(floor(point1.y));
+                    float flag = diffy<=0?(floor(point1.y)):(floor(point1.y)+1);
                     while(opoint.y!=flag)
                     {
                         stry=ChangeToBinary(opoint.y-1);
