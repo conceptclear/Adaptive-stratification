@@ -14,6 +14,13 @@ using namespace std;
 class OctreePoint
 {
     public:
+        OctreePoint(float _x,float _y,float _z):x(_x),y(_y),z(_z){}
+        OctreePoint(const OctreePoint& copy)
+        {
+            x=copy.x;
+            y=copy.y;
+            z=copy.z;
+        }
         friend class Octree;
     private:
         float x;
@@ -107,28 +114,17 @@ class Octree
                 ,float ymax,float ymin
                 ,float zmax,float zmin);
         //Change a single edge into voxel
-        void EdgeChange(
-                float flx1,float flx2,
-                float fly1,float fly2,
-                float flz1,float flz2);
+        void EdgeChange(OctreePoint point1, OctreePoint point2);
         //find the Edge on the part
-        void PerpendicularToSurfaceEdge(float x,float y
-                ,float z,float diff
-                , int serial);
+        void PerpendicularToSurfaceEdge(OctreePoint point1,OctreePoint point2, int serial);
         //find the special edge that is perpendicular to surface
-        void ParallelToSurfaceEdge(float a1,float a2
-                ,float b1,float b2
-                ,float c, int serial);
+        void ParallelToSurfaceEdge(OctreePoint point1, OctreePoint point2, int serial);
         //a1,a2 b1,b2 mean different point coordinate,c means the same coordinate of two point
-        void GeneralLocationEdge(float x1,float x2
-                ,float y1,float y2
-                ,float z1,float z2);
+        void GeneralLocationEdge(OctreePoint point1, OctreePoint point2);
         //use supercoverline to fullfill the inner place
-        void SuperCoverLine(float x1,float x2,float y1,float y2,float z1,float z2);
+        void SuperCoverLine(OctreePoint point1, OctreePoint point2);
         //find the special edge that is perpendicular to surface by using SuperCoverLine
-        void ParallelToSurfaceEdgeSC(float a1,float a2
-                ,float b1,float b2
-                ,float c, int serial);
+        void ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int serial);
         //deal with the general edge
         void FacetToOctree(vector<CFacet> VectorFacet
                 ,vector<CVertex> VectorPoint
@@ -144,6 +140,8 @@ class Octree
         //change the binary into deciaml
         string ChangeToBinary(unsigned int decimal);
         //change the decimal into binary
+        float CheckDecimal(float num);
+        //due to the max num, if num == pow(2,max_height-1), when we use "int" to decide the voxel of this point, it will be false
     private:
         OctreeNode *root;
         int max_height;
