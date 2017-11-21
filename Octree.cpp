@@ -48,8 +48,8 @@ void Octree::MakeOctree(int height)
         front_left_top->MakeOctree(height-1);
         front_right_bottom->MakeOctree(height-1);
         front_right_top->MakeOctree(height-1);
-        }
- }
+    }
+}
 
 void Octree::DeleteRoot(OctreeNode *pRoot)
 {
@@ -64,7 +64,7 @@ void Octree::DeleteRoot(OctreeNode *pRoot)
     OctreeNode* front_right_bottom = pRoot->Front_Right_Bottom;
     OctreeNode* front_right_top = pRoot->Front_Right_Top;
 
-//    cout<<pRoot->orderstr<<endl;
+    //    cout<<pRoot->orderstr<<endl;
 
     delete pRoot;
     if(back_left_bottom!=NULL)DeleteRoot(back_left_bottom);
@@ -85,7 +85,7 @@ void Octree::PointToOctree(vector<CVertex> VectorPoint,float xmax,float xmin,flo
         string binaryx = ChangeCoordinate(VectorPoint[i].m_Point[0],xmax,xmin);
         string binaryy = ChangeCoordinate(VectorPoint[i].m_Point[1],ymax,ymin);
         string binaryz = ChangeCoordinate(VectorPoint[i].m_Point[2],zmax,zmin);
-//        cout<<binaryx<<binaryy<<binaryz<<endl;
+        //        cout<<binaryx<<binaryy<<binaryz<<endl;
         ChangePoint(binaryx,binaryy,binaryz);
     }
 
@@ -93,50 +93,50 @@ void Octree::PointToOctree(vector<CVertex> VectorPoint,float xmax,float xmin,flo
 
 void Octree::ChangePoint(string x,string y,string z)
 {
-        OctreeNode* node =root; 
-        for(int j=0;j<max_height-1;j++)
+    OctreeNode* node =root; 
+    for(int j=0;j<max_height-1;j++)
+    {
+        int position=int(x[j]-48)*4+int(y[j]-48)*2+int(z[j]-48);
+        //            cout<<position<<endl;
+        switch(position)
         {
-            int position=int(x[j]-48)*4+int(y[j]-48)*2+int(z[j]-48);
-//            cout<<position<<endl;
-            switch(position)
-            {
-                case 0:
-                    node=node->Back_Left_Bottom;
-                    break;
-                case 1:
-                    node=node->Back_Left_Top;
-                    break;
-                case 2:
-                    node=node->Back_Right_Bottom;
-                    break;
-                case 3:
-                    node=node->Back_Right_Top;
-                    break;
-                case 4:
-                    node=node->Front_Left_Bottom;
-                    break;
-                case 5:
-                    node=node->Front_Left_Top;
-                    break;
-                case 6:
-                    node=node->Front_Right_Bottom;
-                    break;
-                case 7:
-                    node=node->Front_Right_Top;
-                    break;
-                default:
-                    cerr<<"error"<<endl;
-                    break;
-            }
+            case 0:
+                node=node->Back_Left_Bottom;
+                break;
+            case 1:
+                node=node->Back_Left_Top;
+                break;
+            case 2:
+                node=node->Back_Right_Bottom;
+                break;
+            case 3:
+                node=node->Back_Right_Top;
+                break;
+            case 4:
+                node=node->Front_Left_Bottom;
+                break;
+            case 5:
+                node=node->Front_Left_Top;
+                break;
+            case 6:
+                node=node->Front_Right_Bottom;
+                break;
+            case 7:
+                node=node->Front_Right_Top;
+                break;
+            default:
+                cerr<<"error"<<endl;
+                break;
         }
-            node->flag=0;
-//            cout<<node->orderstr<<endl;
+    }
+    node->flag=0;
+    //            cout<<node->orderstr<<endl;
 }
 
 string Octree::ChangeCoordinate(float coordinate,float max,float min)
 {
     unsigned int data = (coordinate-min)*pow(2,max_height-1)/(max-min);
-//    cout<<data<<endl;
+    //    cout<<data<<endl;
     string output;
     output=ChangeToBinary(data);
     return output;
@@ -152,7 +152,7 @@ string Octree::ChangeToBinary(unsigned int decimal)
         output=output+(decimal%2?"1":"0");
     }
     reverse(output.begin(),output.end());
-//    cout<<output<<endl;
+    //    cout<<output<<endl;
     return output;
 }
 
@@ -214,10 +214,10 @@ void Octree::DisplayOctree(OctreeNode *pRoot)
             data=data/2;
             x+=(data%2?"1":"0");
         }
-//        cout<<x<<endl;
-//        cout<<y<<endl;
-//        cout<<z<<endl;
-//        cout<<pRoot->orderstr<<endl;
+        //        cout<<x<<endl;
+        //        cout<<y<<endl;
+        //        cout<<z<<endl;
+        //        cout<<pRoot->orderstr<<endl;
         DrawVoxel(x,y,z);
     }
 }
@@ -295,7 +295,7 @@ void Octree::DrawVoxel(string x,string y,string z)
     glVertex3i(voxelx,voxely,voxelz+1);
     glVertex3i(voxelx,voxely,voxelz);
     glEnd();
-//    cout<<voxelx<<":"<<voxely<<":"<<voxelz<<endl;
+    //    cout<<voxelx<<":"<<voxely<<":"<<voxelz<<endl;
 }
 
 void Octree::EdgeToOctree(vector<CEdge> VectorEdge, vector<CVertex> VectorPoint,float xmax,float xmin,float ymax,float ymin,float zmax,float zmin)
@@ -324,21 +324,21 @@ void Octree::EdgeChange(OctreePoint point1,OctreePoint point2)
     string stry2 = ChangeToBinary(point2.y);
     string strz1 = ChangeToBinary(point1.z);
     string strz2 = ChangeToBinary(point2.z);
-        if((strx1==strx2)&&(stry1==stry2)&&(strz1==strz2))return;
-        if((strx1==strx2)&&(stry1==stry2))
-            PerpendicularToSurfaceEdge(point1,point2,3);
-        else if((stry1==stry2)&&(strz1==strz2))
-            PerpendicularToSurfaceEdge(point1,point2,1);
-        else if((strx1==strx2)&&(strz1==strz2))
-            PerpendicularToSurfaceEdge(point1,point2,2);
-        else if(strx1==strx2)
-            ParallelToSurfaceEdge(point1,point2,1);
-        else if(stry1==stry2)
-            ParallelToSurfaceEdge(point1,point2,2);
-        else if(strz1==strz2)
-            ParallelToSurfaceEdge(point1,point2,3);
-        else
-            GeneralLocationEdge(point1,point2);
+    if((strx1==strx2)&&(stry1==stry2)&&(strz1==strz2))return;
+    if((strx1==strx2)&&(stry1==stry2))
+        PerpendicularToSurfaceEdge(point1,point2,3);
+    else if((stry1==stry2)&&(strz1==strz2))
+        PerpendicularToSurfaceEdge(point1,point2,1);
+    else if((strx1==strx2)&&(strz1==strz2))
+        PerpendicularToSurfaceEdge(point1,point2,2);
+    else if(strx1==strx2)
+        ParallelToSurfaceEdge(point1,point2,1);
+    else if(stry1==stry2)
+        ParallelToSurfaceEdge(point1,point2,2);
+    else if(strz1==strz2)
+        ParallelToSurfaceEdge(point1,point2,3);
+    else
+        GeneralLocationEdge(point1,point2);
 }
 
 void Octree::PerpendicularToSurfaceEdge(OctreePoint point1,OctreePoint point2, int serial)
@@ -663,12 +663,11 @@ void Octree::FacetToOctree(vector<CFacet> VectorFacet, vector <CVertex> VectorPo
         vector<OctreePoint> OctreeEdge = m_OctreeEdge;
         //exist bug
         //here we need to use supercover line
-        /*
         for(int j=0;j<int(OctreeEdge.size());j++)
         {
-            SuperCoverLine(flx3,OctreeEdge[j].x,fly3,OctreeEdge[j].y,flz3,OctreeEdge[j].z);
+            OctreePoint opoint(OctreeEdge[j].x,OctreeEdge[j].y,OctreeEdge[j].z);
+            SuperCoverLine(opoint,point3);
         }
-        */
         EdgeChange(point3,point2);
         EdgeChange(point1,point3);
     }
@@ -696,169 +695,153 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                     opoint.y = CheckDecimal(opoint.y);
                     opoint.y = diffy>0?(floor(opoint.y)+1):(floor(opoint.y));
                     opoint.z = diffz/diffy*(opoint.y-point2.y)+point2.z;
-                    opoint.x = diffx/diffy*(opoint.y-point2.y)+point2.x;
-                    while(opoint.y!=floor(CheckDecimal(point1.y)))
+                    float flag = diffy<=0?(floor(point1.y)+1):(floor(point1.y));
+                    while(opoint.y!=flag)
                     {
-                        m_OctreeEdge.push_back(opoint);
-                        stry=ChangeToBinary(opoint.y);
+                        stry=ChangeToBinary(opoint.y-1);
                         strz=ChangeToBinary(opoint.z);
                         ChangePoint(strx,stry,strz);
+                        stry=ChangeToBinary(opoint.y);
+                        ChangePoint(strx,stry,strz);
+                        if(opoint.z-floor(opoint.z)==0)
+                        {
+                            strz=ChangeToBinary(opoint.z-1);
+                            ChangePoint(strx,stry,strz);
+                            stry=ChangeToBinary(opoint.y-1);
+                            ChangePoint(strx,stry,strz);
+                        }    
                         opoint.y+=sign_y;
                         opoint.z+=sign_z*abs(diffz/diffy);
-                        opoint.x+=sign_x*abs(diffx/diffy);
                     }
-            if(abs(diffy)>=abs(diffz))
-            {
-                float k =diffy/diffz;
-                int ai = a1>a2?(int(a2)+1):int(ceil(a2)-1);
-                float bi = b2+k*(1.0*ai-a2);
-                string strc = ChangeToBinary(c);
-                while(ai!=int(a1))
-                {
-                    string stra = ChangeToBinary(ai-1);
-                    string strb = ChangeToBinary(bi);
-                    ChangePoint(strc,stra,strb);
-                    stra = ChangeToBinary(ai);
-                    ChangePoint(strc,stra,strb);
-                    if(bi-int(bi)==0)
-                    {
-                        strb = ChangeToBinary(bi-1);
-                        ChangePoint(strc,stra,strb);
-                        stra = ChangeToBinary(ai-1);
-                        ChangePoint(strc,stra,strb);
-                    }
-                    ai+=sign_a;
-                    bi+=sign_b*abs(k);
                 }
-            }
-            else
-            {
-                float k =diffa/diffb;
-                int bi = b1>b2?(int(b2)+1):int(ceil(b2)-1);
-                float ai = a2+k*(1.0*bi-b2);
-                string strc = ChangeToBinary(c);
-                while(bi!=int(b1))
+                else
                 {
-                    string stra = ChangeToBinary(ai);
-                    string strb = ChangeToBinary(bi-1);
-                    ChangePoint(strc,stra,strb);
-                    strb = ChangeToBinary(bi);
-                    ChangePoint(strc,stra,strb);
-                    if(ai-int(ai)==0)
+                    opoint.z = CheckDecimal(opoint.z);
+                    opoint.z = diffz>0?(floor(opoint.z)+1):(floor(opoint.z));
+                    opoint.y = diffy/diffz*(opoint.z-point2.z)+point2.y;
+                    float flag = diffz<=0?(floor(point1.z)+1):(floor(point1.z));
+                    while(opoint.z!=flag)
                     {
-                        stra = ChangeToBinary(ai-1);
-                        ChangePoint(strc,stra,strb);
-                        strb = ChangeToBinary(bi-1);
-                        ChangePoint(strc,stra,strb);
+                        strz=ChangeToBinary(opoint.z-1);
+                        stry=ChangeToBinary(opoint.y);
+                        ChangePoint(strx,stry,strz);
+                        strz=ChangeToBinary(opoint.z);
+                        ChangePoint(strx,stry,strz);
+                        if(opoint.y-floor(opoint.y)==0)
+                        {
+                            stry=ChangeToBinary(opoint.y-1);
+                            ChangePoint(strx,stry,strz);
+                            strz=ChangeToBinary(opoint.z-1);
+                            ChangePoint(strx,stry,strz);
+                        }    
+                        opoint.z+=sign_z;
+                        opoint.y+=sign_y*abs(diffy/diffz);
                     }
-                    ai+=sign_a*abs(k);
-                    bi+=sign_b;
                 }
-            }
             }
             break;
         case 2:
             {
-            if(absa>=absb)
-            {
-                float k =diffb/diffa;
-                int ai = a1>a2?(int(a2)+1):int(ceil(a2)-1);
-                float bi = b2+k*(1.0*ai-a2);
-                string strc = ChangeToBinary(c);
-                while(ai!=int(a1))
+                if(abs(diffx)>=abs(diffz))
                 {
-                    string stra = ChangeToBinary(ai-1);
-                    string strb = ChangeToBinary(bi);
-                    ChangePoint(stra,strc,strb);
-                    stra = ChangeToBinary(ai);
-                    ChangePoint(stra,strc,strb);
-                    if(bi-int(bi)==0)
+                    opoint.x = CheckDecimal(opoint.x);
+                    opoint.x = diffx>0?(floor(opoint.x)+1):(floor(opoint.x));
+                    opoint.z = diffz/diffx*(opoint.x-point2.x)+point2.z;
+                    float flag = diffx<=0?(floor(point1.x)+1):(floor(point1.x));
+                    while(opoint.x!=flag)
                     {
-                        strb = ChangeToBinary(bi-1);
-                        ChangePoint(stra,strc,strb);
-                        stra = ChangeToBinary(ai-1);
-                        ChangePoint(stra,strc,strb);
+                        strx=ChangeToBinary(opoint.x-1);
+                        strz=ChangeToBinary(opoint.z);
+                        ChangePoint(strx,stry,strz);
+                        strx=ChangeToBinary(opoint.x);
+                        ChangePoint(strx,stry,strz);
+                        if(opoint.z-floor(opoint.z)==0)
+                        {
+                            strz=ChangeToBinary(opoint.z-1);
+                            ChangePoint(strx,stry,strz);
+                            strx=ChangeToBinary(opoint.x-1);
+                            ChangePoint(strx,stry,strz);
+                        }    
+                        opoint.x+=sign_x;
+                        opoint.z+=sign_z*abs(diffz/diffx);
                     }
-                    ai+=sign_a;
-                    bi+=sign_b*abs(k);
                 }
-            }
-            else
-            {
-                float k =diffa/diffb;
-                int bi = b1>b2?(int(b2)+1):int(ceil(b2)-1);
-                float ai = a2+k*(1.0*bi-b2);
-                string strc = ChangeToBinary(c);
-                while(bi!=int(b1))
+                else
                 {
-                    string stra = ChangeToBinary(ai);
-                    string strb = ChangeToBinary(bi-1);
-                    ChangePoint(stra,strc,strb);
-                    strb = ChangeToBinary(bi);
-                    ChangePoint(stra,strc,strb);
-                    if(ai-int(ai)==0)
+                    opoint.z = CheckDecimal(opoint.z);
+                    opoint.z = diffz>0?(floor(opoint.z)+1):(floor(opoint.z));
+                    opoint.x = diffx/diffz*(opoint.z-point2.z)+point2.x;
+                    float flag = diffz<=0?(floor(point1.z)+1):(floor(point1.z));
+                    while(opoint.z!=flag)
                     {
-                        stra = ChangeToBinary(ai-1);
-                        ChangePoint(stra,strc,strb);
-                        strb = ChangeToBinary(bi-1);
-                        ChangePoint(stra,strc,strb);
+                        strz=ChangeToBinary(opoint.z-1);
+                        strx=ChangeToBinary(opoint.x);
+                        ChangePoint(strx,stry,strz);
+                        strz=ChangeToBinary(opoint.z);
+                        ChangePoint(strx,stry,strz);
+                        if(opoint.x-floor(opoint.x)==0)
+                        {
+                            strx=ChangeToBinary(opoint.x-1);
+                            ChangePoint(strx,stry,strz);
+                            strz=ChangeToBinary(opoint.z-1);
+                            ChangePoint(strx,stry,strz);
+                        }    
+                        opoint.z+=sign_z;
+                        opoint.x+=sign_x*abs(diffx/diffz);
                     }
-                    ai+=sign_a*abs(k);
-                    bi+=sign_b;
                 }
-            }
             }
             break;
         case 3:
             {
-            if(absa>=absb)
-            {
-                float k =diffb/diffa;
-                int ai = a1>a2?(int(a2)+1):int(ceil(a2)-1);
-                float bi = b2+k*(1.0*ai-a2);
-                string strc = ChangeToBinary(c);
-                while(ai!=int(a1))
+                if(abs(diffx)>=abs(diffy))
                 {
-                    string stra = ChangeToBinary(ai-1);
-                    string strb = ChangeToBinary(bi);
-                    ChangePoint(stra,strb,strc);
-                    stra = ChangeToBinary(ai);
-                    ChangePoint(stra,strb,strc);
-                    if(bi-int(bi)==0)
+                    opoint.x = CheckDecimal(opoint.x);
+                    opoint.x = diffx>0?(floor(opoint.x)+1):(floor(opoint.x));
+                    opoint.y = diffy/diffx*(opoint.x-point2.x)+point2.y;
+                    float flag = diffx<=0?(floor(point1.x)+1):(floor(point1.x));
+                    while(opoint.x!=flag)
                     {
-                        strb = ChangeToBinary(bi-1);
-                        ChangePoint(stra,strb,strc);
-                        stra = ChangeToBinary(ai-1);
-                        ChangePoint(stra,strb,strc);
+                        strx=ChangeToBinary(opoint.x-1);
+                        stry=ChangeToBinary(opoint.y);
+                        ChangePoint(strx,stry,strz);
+                        strx=ChangeToBinary(opoint.x);
+                        ChangePoint(strx,stry,strz);
+                        if(opoint.y-floor(opoint.y)==0)
+                        {
+                            stry=ChangeToBinary(opoint.y-1);
+                            ChangePoint(strx,stry,strz);
+                            strx=ChangeToBinary(opoint.x-1);
+                            ChangePoint(strx,stry,strz);
+                        }    
+                        opoint.x+=sign_x;
+                        opoint.y+=sign_y*abs(diffy/diffx);
                     }
-                    ai+=sign_a;
-                    bi+=sign_b*abs(k);
                 }
-            }
-            else
-            {
-                float k =diffa/diffb;
-                int bi = b1>b2?(int(b2)+1):int(ceil(b2)-1);
-                float ai = a2+k*(1.0*bi-b2);
-                string strc = ChangeToBinary(c);
-                while(bi!=int(b1))
+                else
                 {
-                    string stra = ChangeToBinary(ai);
-                    string strb = ChangeToBinary(bi-1);
-                    ChangePoint(stra,strb,strc);
-                    strb = ChangeToBinary(bi);
-                    ChangePoint(stra,strb,strc);
-                    if(ai-int(ai)==0)
+                    opoint.y = CheckDecimal(opoint.y);
+                    opoint.y = diffy>0?(floor(opoint.y)+1):(floor(opoint.y));
+                    opoint.x = diffx/diffy*(opoint.y-point2.y)+point2.x;
+                    float flag = diffy<=0?(floor(point1.y)+1):(floor(point1.y));
+                    while(opoint.y!=flag)
                     {
-                        stra = ChangeToBinary(ai-1);
-                        ChangePoint(stra,strb,strc);
-                        strb = ChangeToBinary(bi-1);
-                        ChangePoint(stra,strb,strc);
+                        stry=ChangeToBinary(opoint.y-1);
+                        strx=ChangeToBinary(opoint.x);
+                        ChangePoint(strx,stry,strz);
+                        stry=ChangeToBinary(opoint.y);
+                        ChangePoint(strx,stry,strz);
+                        if(opoint.x-floor(opoint.x)==0)
+                        {
+                            strx=ChangeToBinary(opoint.x-1);
+                            ChangePoint(strx,stry,strz);
+                            stry=ChangeToBinary(opoint.y-1);
+                            ChangePoint(strx,stry,strz);
+                        }    
+                        opoint.y+=sign_y;
+                        opoint.x+=sign_x*abs(diffx/diffy);
                     }
-                    ai+=sign_a*abs(k);
-                    bi+=sign_b;
                 }
-            }
             }
             break;
         default:
