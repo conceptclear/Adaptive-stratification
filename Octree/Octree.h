@@ -63,12 +63,12 @@ class OctreeNode
                 Front_Right_Top(front_right_top){}
         ~OctreeNode(){}
     private:
-        string orderstr; 
         //node coding which can define the location of this node in Octree
-        int flag; 
+        string orderstr; 
         //use -1 to define the node out of the part
         //use 0 to define the node on the part
         //use 1 to define the node in the part
+        int flag; 
         OctreeNode *Back_Left_Bottom;
         OctreeNode *Back_Left_Top;
         OctreeNode *Back_Right_Bottom;
@@ -92,56 +92,58 @@ class Octree
         {
             DeleteRoot(root);
         }
-        void DeleteRoot(OctreeNode *pRoot);
         //use iteration to delete the root
-        void MakeOctree(int height);
+        void DeleteRoot(OctreeNode *pRoot);
         //set up an octree with all nodes out of the part
-        void Traverse(void);
+        void MakeOctree(int height);
         //use perorder traversal
+        void Traverse(void);
         void PreOrder(OctreeNode *pRoot); //traverse the octree
         void DisplayOctree(OctreeNode *pRoot); //draw
         void DrawVoxel(string x,string y,string z);
         int IsEmpty()
         {return root==NULL?1:0;}
+        //find the Vertex on the part
         void PointToOctree(vector<CVertex> VectorPoint
                 ,float xmax,float xmin
                 ,float ymax,float ymin
                 ,float zmax,float zmin);
-        //find the Vertex on the part
+        //Change a single edge into voxel
         void EdgeToOctree(vector<CEdge> VectorEdge
                 ,vector<CVertex> VectorPoint
                 ,float xmax,float xmin
                 ,float ymax,float ymin
                 ,float zmax,float zmin);
-        //Change a single edge into voxel
-        void EdgeChange(OctreePoint point1, OctreePoint point2);
-        //find the Edge on the part
-        void PerpendicularToSurfaceEdge(OctreePoint point1,OctreePoint point2, int serial);
+        //Change the Edge on the part to voxel by using Bresenham
+        void EdgeChange_Bresenham(OctreePoint point1, OctreePoint point2);
         //find the special edge that is perpendicular to surface
-        void ParallelToSurfaceEdge(OctreePoint point1, OctreePoint point2, int serial);
-        //a1,a2 b1,b2 mean different point coordinate,c means the same coordinate of two point
-        void GeneralLocationEdge(OctreePoint point1, OctreePoint point2);
+        void PerpendicularToSurfaceEdge(OctreePoint point1,OctreePoint point2, int serial);
+        //find the special edge that is parallel to surface by using Bresenham
+        void ParallelToSurfaceEdge_Bresenham(OctreePoint point1, OctreePoint point2, int serial);
+        //deal with the general edge by using Bresenham
+        void GeneralLocationEdge_Bresenham(OctreePoint point1, OctreePoint point2);
+        //Change the Edge on the part to voxel by using SuperCoverLine
+        void EdgeChange_SuperCoverLine(OctreePoint point1, OctreePoint point2);
+        //find the special edge that is parallel to surface by using SuperCoverLine
+        void ParallelToSurfaceEdge_SuperCoverLine(OctreePoint point1, OctreePoint point2, int serial);
+        //deal with the general edge by using SuperCoverLine
+        void GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint point2);
         //use supercoverline to fullfill the inner place
-        void SuperCoverLine(OctreePoint point1, OctreePoint point2);
-        //find the special edge that is perpendicular to surface by using SuperCoverLine
-        void ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int serial);
-        //deal with the general edge
         void FacetToOctree(vector<CFacet> VectorFacet
                 ,vector<CVertex> VectorPoint
                 ,float xmax,float xmin
                 ,float ymax,float ymin
                 ,float zmax,float zmin);
-        //find the facet on the part
-        void ChangePoint(string x,string y,string z);
         //change this node flag to 0
-        string ChangeCoordinate(float coordinate,float max,float min);
+        void ChangePoint(string x,string y,string z);
         //change the coordinate into binary
-        unsigned int ChangeToDecimal(string binary);
+        string ChangeCoordinate(float coordinate,float max,float min);
         //change the binary into deciaml
-        string ChangeToBinary(unsigned int decimal);
+        unsigned int ChangeToDecimal(string binary);
         //change the decimal into binary
-        float CheckDecimal(float num);
+        string ChangeToBinary(unsigned int decimal);
         //due to the max num, if num == pow(2,max_height-1), when we use "int" to decide the voxel of this point, it will be false
+        float CheckDecimal(float num);
     private:
         OctreeNode *root;
         int max_height;

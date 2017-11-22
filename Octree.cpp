@@ -312,11 +312,11 @@ void Octree::EdgeToOctree(vector<CEdge> VectorEdge, vector<CVertex> VectorPoint,
         // to find the special Edge which is perpendicular to the coordinate surface
         OctreePoint point1(flx1,fly1,flz1);
         OctreePoint point2(flx2,fly2,flz2);
-        EdgeChange(point1,point2);
+        EdgeChange_Bresenham(point1,point2);
     }
 }
 
-void Octree::EdgeChange(OctreePoint point1,OctreePoint point2)
+void Octree::EdgeChange_Bresenham(OctreePoint point1,OctreePoint point2)
 {
     string strx1 = ChangeToBinary(point1.x);
     string strx2 = ChangeToBinary(point2.x);
@@ -332,13 +332,13 @@ void Octree::EdgeChange(OctreePoint point1,OctreePoint point2)
     else if((strx1==strx2)&&(strz1==strz2))
         PerpendicularToSurfaceEdge(point1,point2,2);
     else if(strx1==strx2)
-        ParallelToSurfaceEdge(point1,point2,1);
+        ParallelToSurfaceEdge_Bresenham(point1,point2,1);
     else if(stry1==stry2)
-        ParallelToSurfaceEdge(point1,point2,2);
+        ParallelToSurfaceEdge_Bresenham(point1,point2,2);
     else if(strz1==strz2)
-        ParallelToSurfaceEdge(point1,point2,3);
+        ParallelToSurfaceEdge_Bresenham(point1,point2,3);
     else
-        GeneralLocationEdge(point1,point2);
+        GeneralLocationEdge_Bresenham(point1,point2);
 }
 
 void Octree::PerpendicularToSurfaceEdge(OctreePoint point1,OctreePoint point2, int serial)
@@ -411,7 +411,7 @@ void Octree::PerpendicularToSurfaceEdge(OctreePoint point1,OctreePoint point2, i
     }
 }
 
-void Octree::ParallelToSurfaceEdge(OctreePoint point1, OctreePoint point2, int serial)
+void Octree::ParallelToSurfaceEdge_Bresenham(OctreePoint point1, OctreePoint point2, int serial)
 {
     m_OctreeEdge.clear();
     float diffx = point1.x-point2.x;
@@ -547,7 +547,7 @@ void Octree::ParallelToSurfaceEdge(OctreePoint point1, OctreePoint point2, int s
     }
 }
 
-void Octree::GeneralLocationEdge(OctreePoint point1, OctreePoint point2)
+void Octree::GeneralLocationEdge_Bresenham(OctreePoint point1, OctreePoint point2)
 {
     m_OctreeEdge.clear();
     float diffx = point1.x-point2.x;
@@ -617,7 +617,7 @@ void Octree::GeneralLocationEdge(OctreePoint point1, OctreePoint point2)
     }
 }
 
-void Octree::SuperCoverLine(OctreePoint point1, OctreePoint point2)
+void Octree::EdgeChange_SuperCoverLine(OctreePoint point1, OctreePoint point2)
 {
     string strx1 = ChangeToBinary(point1.x);
     string strx2 = ChangeToBinary(point2.x);
@@ -633,11 +633,13 @@ void Octree::SuperCoverLine(OctreePoint point1, OctreePoint point2)
     else if((strx1==strx2)&&(strz1==strz2))
         PerpendicularToSurfaceEdge(point1,point2,2);
     else if(strx1==strx2)
-        ParallelToSurfaceEdgeSC(point1,point2,1);
+        ParallelToSurfaceEdge_SuperCoverLine(point1,point2,1);
     else if(stry1==stry2)
-        ParallelToSurfaceEdgeSC(point1,point2,2);
+        ParallelToSurfaceEdge_SuperCoverLine(point1,point2,2);
     else if(strz1==strz2)
-        ParallelToSurfaceEdgeSC(point1,point2,3);
+        ParallelToSurfaceEdge_SuperCoverLine(point1,point2,3);
+    else
+        GeneralLocationEdge_SuperCoverLine(point1,point2);
 }
 
 
@@ -659,21 +661,23 @@ void Octree::FacetToOctree(vector<CFacet> VectorFacet, vector <CVertex> VectorPo
         OctreePoint point2(flx2,fly2,flz2);
         OctreePoint point3(flx3,fly3,flz3);
         //to voxelize one edge
-        EdgeChange(point1,point2);
+        EdgeChange_SuperCoverLine(point1,point2);
         vector<OctreePoint> OctreeEdge = m_OctreeEdge;
         //exist bug
         //here we need to use supercover line
+        /*
         for(int j=0;j<int(OctreeEdge.size());j++)
         {
             OctreePoint opoint(OctreeEdge[j].x,OctreeEdge[j].y,OctreeEdge[j].z);
-            SuperCoverLine(opoint,point3);
+            EdgeChange_SuperCoverLine(opoint,point3);
         }
-        EdgeChange(point3,point2);
-        EdgeChange(point1,point3);
+        */
+        EdgeChange_SuperCoverLine(point3,point2);
+        EdgeChange_SuperCoverLine(point1,point3);
     }
 }
 
-void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int serial)
+void Octree::ParallelToSurfaceEdge_SuperCoverLine(OctreePoint point1, OctreePoint point2, int serial)
 {
     float diffx = point1.x-point2.x;
     float diffy = point1.y-point2.y;
@@ -684,6 +688,7 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
     string strx = ChangeToBinary(point2.x);
     string stry = ChangeToBinary(point2.y);
     string strz = ChangeToBinary(point2.z);
+    m_OctreeEdge.clear();
     OctreePoint opoint(point2);
     //find the every intersection of the long side 
     switch(serial)
@@ -698,6 +703,7 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                     float flag = floor(point1.y)+sign_y;
                     while(opoint.y!=flag)
                     {
+                        m_OctreeEdge.push_back(opoint);
                         stry=ChangeToBinary(opoint.y-sign_y);
                         strz=ChangeToBinary(opoint.z);
                         ChangePoint(strx,stry,strz);
@@ -724,6 +730,7 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                     float flag = floor(point1.z)+sign_z;
                     while(opoint.z!=flag)
                     {
+                        m_OctreeEdge.push_back(opoint);
                         strz=ChangeToBinary(opoint.z-sign_z);
                         stry=ChangeToBinary(opoint.y);
                         ChangePoint(strx,stry,strz);
@@ -754,6 +761,7 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                     float flag = floor(point1.x)+sign_x;
                     while(opoint.x!=flag)
                     {
+                        m_OctreeEdge.push_back(opoint);
                         strx=ChangeToBinary(opoint.x-sign_x);
                         strz=ChangeToBinary(opoint.z);
                         ChangePoint(strx,stry,strz);
@@ -780,6 +788,7 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                     float flag = floor(point1.z)+sign_z;
                     while(opoint.z!=flag)
                     {
+                        m_OctreeEdge.push_back(opoint);
                         strz=ChangeToBinary(opoint.z-sign_z);
                         strx=ChangeToBinary(opoint.x);
                         ChangePoint(strx,stry,strz);
@@ -809,6 +818,7 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                     float flag = floor(point1.x)+sign_x;
                     while(opoint.x!=flag)
                     {
+                        m_OctreeEdge.push_back(opoint);
                         strx=ChangeToBinary(opoint.x-sign_x);
                         stry=ChangeToBinary(opoint.y);
                         ChangePoint(strx,stry,strz);
@@ -835,6 +845,7 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                     float flag = floor(point1.y)+sign_y; 
                     while(opoint.y!=flag)
                     {
+                        m_OctreeEdge.push_back(opoint);
                         stry=ChangeToBinary(opoint.y-sign_y);
                         strx=ChangeToBinary(opoint.x);
                         ChangePoint(strx,stry,strz);
@@ -856,7 +867,125 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
             }
             break;
         default:
-            cout<<"error occured in ParallelToSurfaceEdgeSC"<<endl;
+            cout<<"error occured in ParallelToSurfaceEdge_SuperCoverLine"<<endl;
             break;
+    }
+}
+
+void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint point2)
+{
+    float diffx = point1.x-point2.x;
+    float diffy = point1.y-point2.y;
+    float diffz = point1.z-point2.z;
+    int sign_x = diffx>0?1:-1;
+    int sign_y = diffy>0?1:-1;
+    int sign_z = diffz>0?1:-1;
+    string strx = ChangeToBinary(point2.x);
+    string stry = ChangeToBinary(point2.y);
+    string strz = ChangeToBinary(point2.z);
+    m_OctreeEdge.clear();
+    OctreePoint opoint(point2);
+    OctreePoint cpoint(point2);//use this point to compare with opoint to check if other coordinate touch the boundary
+    //find the every intersection of the long side 
+    float diffmax = max(max(abs(diffx),abs(diffy)),abs(diffz));
+    if(diffmax==diffx)
+    {
+        opoint.x = CheckDecimal(opoint.x);
+        opoint.x = floor(opoint.x)+sign_x;
+        opoint.y = diffy/diffx*(opoint.x-point2.x)+point2.y;
+        opoint.z = diffz/diffx*(opoint.x-point2.x)+point2.z;
+        float flag = floor(point1.x)+sign_x;
+        while(opoint.x!=flag)
+        {
+            m_OctreeEdge.push_back(opoint);
+            if((floor(cpoint.y)==floor(opoint.y))&&(floor(cpoint.z)==floor(opoint.z)))
+            {
+                strx=ChangeToBinary(opoint.x-sign_x);
+                stry=ChangeToBinary(opoint.y);
+                strz=ChangeToBinary(opoint.z);
+                ChangePoint(strx,stry,strz);
+                strx=ChangeToBinary(opoint.x);
+                ChangePoint(strx,stry,strz);
+            }
+            else if(opoint.y-floor(opoint.y)==0)
+            {
+                strx=ChangeToBinary(opoint.x-sign_x);
+                stry=ChangeToBinary(opoint.y);
+                strz=ChangeToBinary(opoint.z);
+                ChangePoint(strx,stry,strz);
+                strz=ChangeToBinary(opoint.z-sign_z);
+                ChangePoint(strx,stry,strz);
+                strx=ChangeToBinary(opoint.x);
+                strz=ChangeToBinary(opoint.z);
+                ChangePoint(strx,stry,strz);
+            }
+            else if(opoint.z-floor(opoint.z)==0)
+            {
+                strx=ChangeToBinary(opoint.x-sign_x);
+                stry=ChangeToBinary(opoint.y);
+                strz=ChangeToBinary(opoint.z);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y-sign_y);
+                ChangePoint(strx,stry,strz);
+                strx=ChangeToBinary(opoint.x);
+                stry=ChangeToBinary(opoint.y);
+                ChangePoint(strx,stry,strz);
+            }
+            else
+            {
+                strx=ChangeToBinary(opoint.x-sign_x);
+                stry=ChangeToBinary(opoint.y);
+                strz=ChangeToBinary(opoint.z);
+                ChangePoint(strx,stry,strz);
+                strx=ChangeToBinary(opoint.x);
+                ChangePoint(strx,stry,strz);
+            }
+            cpoint=opoint;
+            opoint.x+=sign_x;
+            opoint.y+=sign_y*abs(diffy/diffx);
+            opoint.z+=sign_z*abs(diffz/diffx);
+        }
+    }
+    else if(diffmax==diffy)
+    {
+        opoint.y = CheckDecimal(opoint.y);
+        opoint.y = floor(opoint.y)+sign_y;
+        opoint.x = diffx/diffy*(opoint.y-point2.y)+point2.x;
+        opoint.z = diffz/diffy*(opoint.y-point2.y)+point2.z;
+        float flag = floor(point1.y)+sign_y; 
+        while(opoint.y!=flag)
+        {
+            m_OctreeEdge.push_back(opoint);
+            stry=ChangeToBinary(opoint.y-sign_y);
+            strx=ChangeToBinary(opoint.x);
+            strz=ChangeToBinary(opoint.z);
+            ChangePoint(strx,stry,strz);
+            stry=ChangeToBinary(opoint.y);
+            ChangePoint(strx,stry,strz);
+            opoint.y+=sign_y;
+            opoint.x+=sign_x*abs(diffx/diffy);
+            opoint.z+=sign_z*abs(diffz/diffy);
+        }
+    }
+    else
+    {
+        opoint.z = CheckDecimal(opoint.z);
+        opoint.z = floor(opoint.z)+sign_z;
+        opoint.x = diffx/diffz*(opoint.z-point2.z)+point2.x;
+        opoint.y = diffy/diffz*(opoint.z-point2.z)+point2.y;
+        float flag = floor(point1.z)+sign_z;
+        while(opoint.z!=flag)
+        {
+            m_OctreeEdge.push_back(opoint);
+            strz=ChangeToBinary(opoint.z-sign_z);
+            strx=ChangeToBinary(opoint.x);
+            stry=ChangeToBinary(opoint.y);
+            ChangePoint(strx,stry,strz);
+            strz=ChangeToBinary(opoint.z);
+            ChangePoint(strx,stry,strz);
+            opoint.z+=sign_z;
+            opoint.x+=sign_x*abs(diffx/diffz);
+            opoint.y+=sign_y*abs(diffy/diffz);
+        }
     }
 }
