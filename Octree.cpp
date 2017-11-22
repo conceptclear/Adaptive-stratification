@@ -909,30 +909,29 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
             }
             else if(opoint.y-floor(opoint.y)==0)
             {
-                strx=ChangeToBinary(opoint.x-sign_x);
-                stry=ChangeToBinary(opoint.y);
-                strz=ChangeToBinary(opoint.z);
-                ChangePoint(strx,stry,strz);
-                strz=ChangeToBinary(opoint.z-sign_z);
-                ChangePoint(strx,stry,strz);
                 strx=ChangeToBinary(opoint.x);
-                strz=ChangeToBinary(opoint.z);
-                ChangePoint(strx,stry,strz);
-            }
-            else if(opoint.z-floor(opoint.z)==0)
-            {
-                strx=ChangeToBinary(opoint.x-sign_x);
                 stry=ChangeToBinary(opoint.y);
                 strz=ChangeToBinary(opoint.z);
                 ChangePoint(strx,stry,strz);
                 stry=ChangeToBinary(opoint.y-sign_y);
                 ChangePoint(strx,stry,strz);
+                strx=ChangeToBinary(opoint.x-sign_x);
+                ChangePoint(strx,stry,strz);
+            }
+            else if(opoint.z-floor(opoint.z)==0)
+            {
                 strx=ChangeToBinary(opoint.x);
                 stry=ChangeToBinary(opoint.y);
+                strz=ChangeToBinary(opoint.z);
+                ChangePoint(strx,stry,strz);
+                strz=ChangeToBinary(opoint.z-sign_z);
+                ChangePoint(strx,stry,strz);
+                strx=ChangeToBinary(opoint.x-sign_x);
                 ChangePoint(strx,stry,strz);
             }
             else
             {
+                float z_comp = diffz/diffy*(floor(opoint.y)-point2.y)+point2.z;
                 strx=ChangeToBinary(opoint.x-sign_x);
                 stry=ChangeToBinary(opoint.y);
                 strz=ChangeToBinary(opoint.z);
