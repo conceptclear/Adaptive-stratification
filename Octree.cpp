@@ -560,7 +560,7 @@ void Octree::GeneralLocationEdge(OctreePoint point1, OctreePoint point2)
     string stry = ChangeToBinary(point2.y);
     string strz = ChangeToBinary(point2.z);
     OctreePoint opoint(point2);
-    float diffmax=max((abs(diffx),abs(diffy)),abs(diffz));
+    float diffmax=max(max(abs(diffx),abs(diffy)),abs(diffz));
     if(diffmax==abs(diffx))
     {
         opoint.x = CheckDecimal(opoint.x);
@@ -693,23 +693,25 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                 if(abs(diffy)>=abs(diffz))
                 {
                     opoint.y = CheckDecimal(opoint.y);
-                    opoint.y = diffy>0?(floor(opoint.y)+1):(floor(opoint.y));
+                    opoint.y = floor(opoint.y)+sign_y;
                     opoint.z = diffz/diffy*(opoint.y-point2.y)+point2.z;
-                    float flag = diffy<=0?(floor(point1.y)):(floor(point1.y)+1);
+                    float flag = floor(point1.y)+sign_y;
                     while(opoint.y!=flag)
                     {
-                        stry=ChangeToBinary(opoint.y-1);
+                        stry=ChangeToBinary(opoint.y-sign_y);
                         strz=ChangeToBinary(opoint.z);
                         ChangePoint(strx,stry,strz);
                         stry=ChangeToBinary(opoint.y);
                         ChangePoint(strx,stry,strz);
+                        /*
                         if(opoint.z-floor(opoint.z)==0)
                         {
-                            strz=ChangeToBinary(opoint.z-1);
+                            strz=ChangeToBinary(opoint.z-sign_z);
                             ChangePoint(strx,stry,strz);
-                            stry=ChangeToBinary(opoint.y-1);
+                            stry=ChangeToBinary(opoint.y-sign_y);
                             ChangePoint(strx,stry,strz);
-                        }    
+                        }
+                    */    
                         opoint.y+=sign_y;
                         opoint.z+=sign_z*abs(diffz/diffy);
                     }
@@ -717,23 +719,25 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                 else
                 {
                     opoint.z = CheckDecimal(opoint.z);
-                    opoint.z = diffz>0?(floor(opoint.z)+1):(floor(opoint.z));
+                    opoint.z = floor(opoint.z)+sign_z;
                     opoint.y = diffy/diffz*(opoint.z-point2.z)+point2.y;
-                    float flag = diffz<=0?(floor(point1.z)):(floor(point1.z)+1);
+                    float flag = floor(point1.z)+sign_z;
                     while(opoint.z!=flag)
                     {
-                        strz=ChangeToBinary(opoint.z-1);
+                        strz=ChangeToBinary(opoint.z-sign_z);
                         stry=ChangeToBinary(opoint.y);
                         ChangePoint(strx,stry,strz);
                         strz=ChangeToBinary(opoint.z);
                         ChangePoint(strx,stry,strz);
+                        /*
                         if(opoint.y-floor(opoint.y)==0)
                         {
-                            stry=ChangeToBinary(opoint.y-1);
+                            stry=ChangeToBinary(opoint.y-sign_y);
                             ChangePoint(strx,stry,strz);
-                            strz=ChangeToBinary(opoint.z-1);
+                            strz=ChangeToBinary(opoint.z-sign_z);
                             ChangePoint(strx,stry,strz);
-                        }    
+                        } 
+                     */   
                         opoint.z+=sign_z;
                         opoint.y+=sign_y*abs(diffy/diffz);
                     }
@@ -745,23 +749,25 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                 if(abs(diffx)>=abs(diffz))
                 {
                     opoint.x = CheckDecimal(opoint.x);
-                    opoint.x = diffx>0?(floor(opoint.x)+1):(floor(opoint.x));
+                    opoint.x = floor(opoint.x)+sign_x;
                     opoint.z = diffz/diffx*(opoint.x-point2.x)+point2.z;
-                    float flag = diffx<=0?(floor(point1.x)):(floor(point1.x)+1);
+                    float flag = floor(point1.x)+sign_x;
                     while(opoint.x!=flag)
                     {
-                        strx=ChangeToBinary(opoint.x-1);
+                        strx=ChangeToBinary(opoint.x-sign_x);
                         strz=ChangeToBinary(opoint.z);
                         ChangePoint(strx,stry,strz);
                         strx=ChangeToBinary(opoint.x);
                         ChangePoint(strx,stry,strz);
+                        /*
                         if(opoint.z-floor(opoint.z)==0)
                         {
-                            strz=ChangeToBinary(opoint.z-1);
+                            strz=ChangeToBinary(opoint.z-sign_z);
                             ChangePoint(strx,stry,strz);
-                            strx=ChangeToBinary(opoint.x-1);
+                            strx=ChangeToBinary(opoint.x-sign_x);
                             ChangePoint(strx,stry,strz);
-                        }    
+                        } 
+                     */   
                         opoint.x+=sign_x;
                         opoint.z+=sign_z*abs(diffz/diffx);
                     }
@@ -769,23 +775,24 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                 else
                 {
                     opoint.z = CheckDecimal(opoint.z);
-                    opoint.z = diffz>0?(floor(opoint.z)+1):(floor(opoint.z));
+                    opoint.z = floor(opoint.z)+sign_z;
                     opoint.x = diffx/diffz*(opoint.z-point2.z)+point2.x;
-                    float flag = diffz<=0?(floor(point1.z)):(floor(point1.z)+1);
+                    float flag = floor(point1.z)+sign_z;
                     while(opoint.z!=flag)
                     {
-                        strz=ChangeToBinary(opoint.z-1);
+                        strz=ChangeToBinary(opoint.z-sign_z);
                         strx=ChangeToBinary(opoint.x);
                         ChangePoint(strx,stry,strz);
                         strz=ChangeToBinary(opoint.z);
                         ChangePoint(strx,stry,strz);
+                        /*
                         if(opoint.x-floor(opoint.x)==0)
                         {
-                            strx=ChangeToBinary(opoint.x-1);
+                            strx=ChangeToBinary(opoint.x-sign_x);
                             ChangePoint(strx,stry,strz);
-                            strz=ChangeToBinary(opoint.z-1);
+                            strz=ChangeToBinary(opoint.z-sign_z);
                             ChangePoint(strx,stry,strz);
-                        }    
+                        } */   
                         opoint.z+=sign_z;
                         opoint.x+=sign_x*abs(diffx/diffz);
                     }
@@ -797,23 +804,25 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                 if(abs(diffx)>=abs(diffy))
                 {
                     opoint.x = CheckDecimal(opoint.x);
-                    opoint.x = diffx>0?(floor(opoint.x)+1):(floor(opoint.x));
+                    opoint.x = floor(opoint.x)+sign_x;
                     opoint.y = diffy/diffx*(opoint.x-point2.x)+point2.y;
-                    float flag = diffx<=0?(floor(point1.x)):(floor(point1.x)+1);
+                    float flag = floor(point1.x)+sign_x;
                     while(opoint.x!=flag)
                     {
-                        strx=ChangeToBinary(opoint.x-1);
+                        strx=ChangeToBinary(opoint.x-sign_x);
                         stry=ChangeToBinary(opoint.y);
                         ChangePoint(strx,stry,strz);
                         strx=ChangeToBinary(opoint.x);
                         ChangePoint(strx,stry,strz);
+                        /*
                         if(opoint.y-floor(opoint.y)==0)
                         {
-                            stry=ChangeToBinary(opoint.y-1);
+                            stry=ChangeToBinary(opoint.y-sign_y);
                             ChangePoint(strx,stry,strz);
-                            strx=ChangeToBinary(opoint.x-1);
+                            strx=ChangeToBinary(opoint.x-sign_x);
                             ChangePoint(strx,stry,strz);
-                        }    
+                        } 
+                     */   
                         opoint.x+=sign_x;
                         opoint.y+=sign_y*abs(diffy/diffx);
                     }
@@ -821,23 +830,25 @@ void Octree::ParallelToSurfaceEdgeSC(OctreePoint point1, OctreePoint point2, int
                 else
                 {
                     opoint.y = CheckDecimal(opoint.y);
-                    opoint.y = diffy>0?(floor(opoint.y)+1):(floor(opoint.y));
+                    opoint.y = floor(opoint.y)+sign_y;
                     opoint.x = diffx/diffy*(opoint.y-point2.y)+point2.x;
-                    float flag = diffy<=0?(floor(point1.y)):(floor(point1.y)+1);
+                    float flag = floor(point1.y)+sign_y; 
                     while(opoint.y!=flag)
                     {
-                        stry=ChangeToBinary(opoint.y-1);
+                        stry=ChangeToBinary(opoint.y-sign_y);
                         strx=ChangeToBinary(opoint.x);
                         ChangePoint(strx,stry,strz);
                         stry=ChangeToBinary(opoint.y);
                         ChangePoint(strx,stry,strz);
+                        /*
                         if(opoint.x-floor(opoint.x)==0)
                         {
-                            strx=ChangeToBinary(opoint.x-1);
+                            strx=ChangeToBinary(opoint.x-sign_x);
                             ChangePoint(strx,stry,strz);
-                            stry=ChangeToBinary(opoint.y-1);
+                            stry=ChangeToBinary(opoint.y-sign_y);
                             ChangePoint(strx,stry,strz);
-                        }    
+                        } 
+                     */   
                         opoint.y+=sign_y;
                         opoint.x+=sign_x*abs(diffx/diffy);
                     }
