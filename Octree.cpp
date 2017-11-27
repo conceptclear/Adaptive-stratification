@@ -661,6 +661,7 @@ void Octree::FacetToOctree(vector<CFacet> VectorFacet, vector <CVertex> VectorPo
         OctreePoint point2(flx2,fly2,flz2);
         OctreePoint point3(flx3,fly3,flz3);
         //to voxelize one edge
+        /*
         EdgeChange_SuperCoverLine(point1,point2);
         vector<OctreePoint> OctreeEdge = m_OctreeEdge;
         //exist bug
@@ -672,6 +673,61 @@ void Octree::FacetToOctree(vector<CFacet> VectorFacet, vector <CVertex> VectorPo
         }
         EdgeChange_SuperCoverLine(point3,point2);
         EdgeChange_SuperCoverLine(point1,point3);
+        */
+        float powlength12 = pow((point1.x-point2.x),2)+pow((point1.y-point2.y),2)+pow((point1.z-point2.z),2);
+        float powlength23 = pow((point3.x-point2.x),2)+pow((point3.y-point2.y),2)+pow((point3.z-point2.z),2);
+        float powlength13 = pow((point1.x-point3.x),2)+pow((point1.y-point3.y),2)+pow((point1.z-point3.z),2);
+        float lengthmax = max(max(powlength12,powlength23),powlength13);
+        if(lengthmax==powlength12)
+        {
+            EdgeChange_SuperCoverLine(point1,point2);
+            vector<OctreePoint> OctreeEdge = m_OctreeEdge;
+            //exist bug
+            //here we need to use supercover line
+            for(int j=0;j<int(OctreeEdge.size());j++)
+            {
+                OctreePoint opoint(OctreeEdge[j].x,OctreeEdge[j].y,OctreeEdge[j].z);
+                EdgeChange_SuperCoverLine(opoint,point3);
+            }
+            EdgeChange_SuperCoverLine(point3,point2);
+            EdgeChange_SuperCoverLine(point1,point3);
+        }
+        else if(lengthmax==powlength23)
+        {
+            EdgeChange_SuperCoverLine(point3,point2);
+            vector<OctreePoint> OctreeEdge = m_OctreeEdge;
+            //exist bug
+            //here we need to use supercover line
+            for(int j=0;j<int(OctreeEdge.size());j++)
+            {
+                OctreePoint opoint(OctreeEdge[j].x,OctreeEdge[j].y,OctreeEdge[j].z);
+                EdgeChange_SuperCoverLine(opoint,point1);
+            }
+            EdgeChange_SuperCoverLine(point1,point2);
+            EdgeChange_SuperCoverLine(point1,point3);
+        }
+        else if(lengthmax==powlength13)
+        {
+            EdgeChange_SuperCoverLine(point1,point3);
+            vector<OctreePoint> OctreeEdge = m_OctreeEdge;
+            //exist bug
+            //here we need to use supercover line
+            for(int j=0;j<int(OctreeEdge.size());j++)
+            {
+                OctreePoint opoint(OctreeEdge[j].x,OctreeEdge[j].y,OctreeEdge[j].z);
+                EdgeChange_SuperCoverLine(opoint,point2);
+            }
+            EdgeChange_SuperCoverLine(point3,point2);
+            EdgeChange_SuperCoverLine(point1,point2);
+        }
+        else
+        {
+            cout<<"error occured in FacetToOctree"<<endl;
+            cout<<"lengthmax="<<lengthmax<<endl;
+            cout<<"powlength12="<<powlength12<<endl;
+            cout<<"powlength23="<<powlength23<<endl;
+            cout<<"powlength13="<<powlength13<<endl;
+        }
     }
 }
 
@@ -696,13 +752,13 @@ void Octree::ParallelToSurfaceEdge_SuperCoverLine(OctreePoint point1, OctreePoin
                 if(abs(diffy)>=abs(diffz))
                 {
                     opoint.y = CheckDecimal(opoint.y);
-                    opoint.y = floor(opoint.y)+sign_y;
+                    opoint.y = diffy>0?floor(opoint.y)+sign_y:floor(opoint.y);
                     opoint.z = diffz/diffy*(opoint.y-point2.y)+point2.z;
-                    float flag = floor(point1.y)+sign_y;
+                    float flag = diffy>0?floor(point1.y)+sign_y:floor(point1.y);
                     while(opoint.y!=flag)
                     {
                         m_OctreeEdge.push_back(opoint);
-                        stry=ChangeToBinary(opoint.y-sign_y);
+                        stry=ChangeToBinary(opoint.y-1);
                         strz=ChangeToBinary(opoint.z);
                         ChangePoint(strx,stry,strz);
                         stry=ChangeToBinary(opoint.y);
@@ -723,13 +779,13 @@ void Octree::ParallelToSurfaceEdge_SuperCoverLine(OctreePoint point1, OctreePoin
                 else
                 {
                     opoint.z = CheckDecimal(opoint.z);
-                    opoint.z = floor(opoint.z)+sign_z;
+                    opoint.z = diffz>0?floor(opoint.z)+sign_z:floor(opoint.z);
                     opoint.y = diffy/diffz*(opoint.z-point2.z)+point2.y;
-                    float flag = floor(point1.z)+sign_z;
+                    float flag = diffz>0?floor(point1.z)+sign_z:floor(point1.z);
                     while(opoint.z!=flag)
                     {
                         m_OctreeEdge.push_back(opoint);
-                        strz=ChangeToBinary(opoint.z-sign_z);
+                        strz=ChangeToBinary(opoint.z-1);
                         stry=ChangeToBinary(opoint.y);
                         ChangePoint(strx,stry,strz);
                         strz=ChangeToBinary(opoint.z);
@@ -754,13 +810,13 @@ void Octree::ParallelToSurfaceEdge_SuperCoverLine(OctreePoint point1, OctreePoin
                 if(abs(diffx)>=abs(diffz))
                 {
                     opoint.x = CheckDecimal(opoint.x);
-                    opoint.x = floor(opoint.x)+sign_x;
+                    opoint.x = diffx>0?floor(opoint.x)+sign_x:floor(opoint.x);
                     opoint.z = diffz/diffx*(opoint.x-point2.x)+point2.z;
-                    float flag = floor(point1.x)+sign_x;
+                    float flag = diffx>0?floor(point1.x)+sign_x:floor(point1.x);
                     while(opoint.x!=flag)
                     {
                         m_OctreeEdge.push_back(opoint);
-                        strx=ChangeToBinary(opoint.x-sign_x);
+                        strx=ChangeToBinary(opoint.x-1);
                         strz=ChangeToBinary(opoint.z);
                         ChangePoint(strx,stry,strz);
                         strx=ChangeToBinary(opoint.x);
@@ -781,13 +837,13 @@ void Octree::ParallelToSurfaceEdge_SuperCoverLine(OctreePoint point1, OctreePoin
                 else
                 {
                     opoint.z = CheckDecimal(opoint.z);
-                    opoint.z = floor(opoint.z)+sign_z;
+                    opoint.z = diffz>0?floor(opoint.z)+sign_z:floor(opoint.z);
                     opoint.x = diffx/diffz*(opoint.z-point2.z)+point2.x;
-                    float flag = floor(point1.z)+sign_z;
+                    float flag = diffz>0?floor(point1.z)+sign_z:floor(point1.z);
                     while(opoint.z!=flag)
                     {
                         m_OctreeEdge.push_back(opoint);
-                        strz=ChangeToBinary(opoint.z-sign_z);
+                        strz=ChangeToBinary(opoint.z-1);
                         strx=ChangeToBinary(opoint.x);
                         ChangePoint(strx,stry,strz);
                         strz=ChangeToBinary(opoint.z);
@@ -811,13 +867,13 @@ void Octree::ParallelToSurfaceEdge_SuperCoverLine(OctreePoint point1, OctreePoin
                 if(abs(diffx)>=abs(diffy))
                 {
                     opoint.x = CheckDecimal(opoint.x);
-                    opoint.x = floor(opoint.x)+sign_x;
+                    opoint.x = diffx>0?floor(opoint.x)+sign_x:floor(opoint.x);
                     opoint.y = diffy/diffx*(opoint.x-point2.x)+point2.y;
-                    float flag = floor(point1.x)+sign_x;
+                    float flag = diffx>0?floor(point1.x)+sign_x:floor(point1.x);
                     while(opoint.x!=flag)
                     {
                         m_OctreeEdge.push_back(opoint);
-                        strx=ChangeToBinary(opoint.x-sign_x);
+                        strx=ChangeToBinary(opoint.x-1);
                         stry=ChangeToBinary(opoint.y);
                         ChangePoint(strx,stry,strz);
                         strx=ChangeToBinary(opoint.x);
@@ -838,13 +894,13 @@ void Octree::ParallelToSurfaceEdge_SuperCoverLine(OctreePoint point1, OctreePoin
                 else
                 {
                     opoint.y = CheckDecimal(opoint.y);
-                    opoint.y = floor(opoint.y)+sign_y;
+                    opoint.y = diffy>0?floor(opoint.y)+sign_y:floor(opoint.y);
                     opoint.x = diffx/diffy*(opoint.y-point2.y)+point2.x;
-                    float flag = floor(point1.y)+sign_y; 
+                    float flag = diffy>0?floor(point1.y)+sign_y:floor(point1.y); 
                     while(opoint.y!=flag)
                     {
                         m_OctreeEdge.push_back(opoint);
-                        stry=ChangeToBinary(opoint.y-sign_y);
+                        stry=ChangeToBinary(opoint.y-1);
                         strx=ChangeToBinary(opoint.x);
                         ChangePoint(strx,stry,strz);
                         stry=ChangeToBinary(opoint.y);
@@ -889,16 +945,16 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
     if(diffmax==abs(diffx))
     {
         opoint.x = CheckDecimal(opoint.x);
-        opoint.x = floor(opoint.x)+sign_x;
+        opoint.x = diffx>0?floor(opoint.x)+sign_x:floor(opoint.x);
         opoint.y = diffy/diffx*(opoint.x-point2.x)+point2.y;
         opoint.z = diffz/diffx*(opoint.x-point2.x)+point2.z;
-        float flag = floor(point1.x)+sign_x;
+        float flag = diffx>0?floor(point1.x)+sign_x:floor(point1.x);
         while(opoint.x!=flag)
         {
             m_OctreeEdge.push_back(opoint);
             if((floor(cpoint.y)==floor(opoint.y))||(floor(cpoint.z)==floor(opoint.z)))
             {
-                strx=ChangeToBinary(opoint.x-sign_x);
+                strx=ChangeToBinary(opoint.x-1);
                 stry=ChangeToBinary(opoint.y);
                 strz=ChangeToBinary(opoint.z);
                 ChangePoint(strx,stry,strz);
@@ -911,9 +967,11 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                 stry=ChangeToBinary(opoint.y);
                 strz=ChangeToBinary(opoint.z);
                 ChangePoint(strx,stry,strz);
-                stry=ChangeToBinary(opoint.y-sign_y);
+                stry=ChangeToBinary(opoint.y-1);
                 ChangePoint(strx,stry,strz);
-                strx=ChangeToBinary(opoint.x-sign_x);
+                strx=ChangeToBinary(opoint.x-1);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y);
                 ChangePoint(strx,stry,strz);
             }
             else if((opoint.z-floor(opoint.z)==0)&&(opoint.y-floor(opoint.y)==1))
@@ -922,9 +980,11 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                 stry=ChangeToBinary(opoint.y);
                 strz=ChangeToBinary(opoint.z);
                 ChangePoint(strx,stry,strz);
-                strz=ChangeToBinary(opoint.z-sign_z);
+                strz=ChangeToBinary(opoint.z-1);
                 ChangePoint(strx,stry,strz);
-                strx=ChangeToBinary(opoint.x-sign_x);
+                strx=ChangeToBinary(opoint.x-1);
+                ChangePoint(strx,stry,strz);
+                strz=ChangeToBinary(opoint.z);
                 ChangePoint(strx,stry,strz);
             }
             else if((opoint.z-floor(opoint.z)==1)&&(opoint.y-floor(opoint.y)==1))
@@ -932,6 +992,21 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                 strx=ChangeToBinary(opoint.x);
                 stry=ChangeToBinary(opoint.y);
                 strz=ChangeToBinary(opoint.z);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y-1);
+                ChangePoint(strx,stry,strz);
+                strz=ChangeToBinary(opoint.z-1);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y);
+                ChangePoint(strx,stry,strz);
+                strx=ChangeToBinary(opoint.x-1);
+                strz=ChangeToBinary(opoint.z);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y-1);
+                ChangePoint(strx,stry,strz);
+                strz=ChangeToBinary(opoint.z-1);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y);
                 ChangePoint(strx,stry,strz);
             }
             else
@@ -944,14 +1019,24 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                     stry=ChangeToBinary(opoint.y);
                     strz=ChangeToBinary(opoint.z);
                     ChangePoint(strx,stry,strz);
-                    strx=ChangeToBinary(opoint.x-sign_x);
+                    strx=ChangeToBinary(opoint.x-1);
                     ChangePoint(strx,stry,strz);
-                    strz=ChangeToBinary(opoint.z-sign_z);
-                    ChangePoint(strx,stry,strz);
+                    if(sign_x<0)
+                    {
+                        strx=ChangeToBinary(opoint.x);
+                        strz=ChangeToBinary(opoint.z-sign_z);
+                        ChangePoint(strx,stry,strz);
+                    }
+                    else
+                    {
+                        strx=ChangeToBinary(opoint.x-1);
+                        strz=ChangeToBinary(opoint.z-sign_z);
+                        ChangePoint(strx,stry,strz);
+                    }
                 }
                 else if(floor(z_comp)==z_comp)
                 {
-                    strx=ChangeToBinary(opoint.x-sign_x);
+                    strx=ChangeToBinary(opoint.x-1);
                     stry=ChangeToBinary(opoint.y);
                     strz=ChangeToBinary(opoint.z);
                     ChangePoint(strx,stry,strz);
@@ -964,10 +1049,20 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                     stry=ChangeToBinary(opoint.y);
                     strz=ChangeToBinary(opoint.z);
                     ChangePoint(strx,stry,strz);
-                    strx=ChangeToBinary(opoint.x-sign_x);
+                    strx=ChangeToBinary(opoint.x-1);
                     ChangePoint(strx,stry,strz);
-                    stry=ChangeToBinary(opoint.y-sign_y);
-                    ChangePoint(strx,stry,strz);
+                    if(sign_x<0)
+                    {
+                        strx=ChangeToBinary(opoint.x);
+                        stry=ChangeToBinary(opoint.y-sign_y);
+                        ChangePoint(strx,stry,strz);
+                    }
+                    else
+                    {
+                        strx=ChangeToBinary(opoint.x-1);
+                        stry=ChangeToBinary(opoint.y-sign_y);
+                        ChangePoint(strx,stry,strz);
+                    }
                 }
             }
             cpoint=opoint;
@@ -979,16 +1074,16 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
     else if(diffmax==abs(diffy))
     {
         opoint.y = CheckDecimal(opoint.y);
-        opoint.y = floor(opoint.y)+sign_y;
+        opoint.y = diffy>0?floor(opoint.y)+sign_y:floor(opoint.y);
         opoint.x = diffx/diffy*(opoint.y-point2.y)+point2.x;
         opoint.z = diffz/diffy*(opoint.y-point2.y)+point2.z;
-        float flag = floor(point1.y)+sign_y; 
+        float flag = diffy>0?floor(point1.y)+sign_y:floor(point1.y); 
         while(opoint.y!=flag)
         {
             m_OctreeEdge.push_back(opoint);
             if((floor(cpoint.x)==floor(opoint.x))||(floor(cpoint.z)==floor(opoint.z)))
             {
-                stry=ChangeToBinary(opoint.y-sign_y);
+                stry=ChangeToBinary(opoint.y-1);
                 strx=ChangeToBinary(opoint.x);
                 strz=ChangeToBinary(opoint.z);
                 ChangePoint(strx,stry,strz);
@@ -1001,9 +1096,11 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                 stry=ChangeToBinary(opoint.y);
                 strz=ChangeToBinary(opoint.z);
                 ChangePoint(strx,stry,strz);
-                strx=ChangeToBinary(opoint.x-sign_x);
+                stry=ChangeToBinary(opoint.y-1);
                 ChangePoint(strx,stry,strz);
-                stry=ChangeToBinary(opoint.y-sign_y);
+                strx=ChangeToBinary(opoint.x-1);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y);
                 ChangePoint(strx,stry,strz);
             }
             else if((opoint.z-floor(opoint.z)==0)&&(opoint.x-floor(opoint.x)==1))
@@ -1012,9 +1109,11 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                 stry=ChangeToBinary(opoint.y);
                 strz=ChangeToBinary(opoint.z);
                 ChangePoint(strx,stry,strz);
-                strz=ChangeToBinary(opoint.z-sign_z);
+                strz=ChangeToBinary(opoint.z-1);
                 ChangePoint(strx,stry,strz);
-                stry=ChangeToBinary(opoint.y-sign_y);
+                stry=ChangeToBinary(opoint.y-1);
+                ChangePoint(strx,stry,strz);
+                strz=ChangeToBinary(opoint.z);
                 ChangePoint(strx,stry,strz);
             }
             else if((opoint.z-floor(opoint.z)==1)&&(opoint.x-floor(opoint.x)==1))
@@ -1022,6 +1121,21 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                 strx=ChangeToBinary(opoint.x);
                 stry=ChangeToBinary(opoint.y);
                 strz=ChangeToBinary(opoint.z);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y-1);
+                ChangePoint(strx,stry,strz);
+                strz=ChangeToBinary(opoint.z-1);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y);
+                ChangePoint(strx,stry,strz);
+                strx=ChangeToBinary(opoint.x-1);
+                strz=ChangeToBinary(opoint.z);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y-1);
+                ChangePoint(strx,stry,strz);
+                strz=ChangeToBinary(opoint.z-1);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y);
                 ChangePoint(strx,stry,strz);
             }
             else
@@ -1034,14 +1148,24 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                     stry=ChangeToBinary(opoint.y);
                     strz=ChangeToBinary(opoint.z);
                     ChangePoint(strx,stry,strz);
-                    stry=ChangeToBinary(opoint.y-sign_y);
+                    stry=ChangeToBinary(opoint.y-1);
                     ChangePoint(strx,stry,strz);
-                    strz=ChangeToBinary(opoint.z-sign_z);
-                    ChangePoint(strx,stry,strz);
+                    if(sign_y<0)
+                    {
+                        stry=ChangeToBinary(opoint.y);
+                        strz=ChangeToBinary(opoint.z-sign_z);
+                        ChangePoint(strx,stry,strz);
+                    }
+                    else
+                    {
+                        stry=ChangeToBinary(opoint.y-1);
+                        strz=ChangeToBinary(opoint.z-sign_z);
+                        ChangePoint(strx,stry,strz);
+                    }
                 }
                 else if(floor(z_comp)==z_comp)
                 {
-                    stry=ChangeToBinary(opoint.y-sign_y);
+                    stry=ChangeToBinary(opoint.y-1);
                     strx=ChangeToBinary(opoint.x);
                     strz=ChangeToBinary(opoint.z);
                     ChangePoint(strx,stry,strz);
@@ -1054,10 +1178,20 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                     stry=ChangeToBinary(opoint.y);
                     strz=ChangeToBinary(opoint.z);
                     ChangePoint(strx,stry,strz);
-                    stry=ChangeToBinary(opoint.y-sign_y);
+                    stry=ChangeToBinary(opoint.y-1);
                     ChangePoint(strx,stry,strz);
-                    strx=ChangeToBinary(opoint.x-sign_x);
-                    ChangePoint(strx,stry,strz);
+                    if(sign_y<0)
+                    {
+                        stry=ChangeToBinary(opoint.y);
+                        strx=ChangeToBinary(opoint.x-sign_x);
+                        ChangePoint(strx,stry,strz);
+                    }
+                    else
+                    {
+                        stry=ChangeToBinary(opoint.y-1);
+                        strx=ChangeToBinary(opoint.x-sign_x);
+                        ChangePoint(strx,stry,strz);
+                    }
                 }
             }
             cpoint=opoint;
@@ -1066,19 +1200,19 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
             opoint.z+=sign_z*abs(diffz/diffy);
         }
     }
-    else
+    else if(diffmax==abs(diffz))
     {
         opoint.z = CheckDecimal(opoint.z);
-        opoint.z = floor(opoint.z)+sign_z;
+        opoint.z = diffz>0?floor(opoint.z)+sign_z:floor(opoint.z);
         opoint.x = diffx/diffz*(opoint.z-point2.z)+point2.x;
         opoint.y = diffy/diffz*(opoint.z-point2.z)+point2.y;
-        float flag = floor(point1.z)+sign_z;
+        float flag = diffz>0?floor(point1.z)+sign_z:floor(point1.z);
         while(opoint.z!=flag)
         {
             m_OctreeEdge.push_back(opoint);
             if((floor(cpoint.x)==floor(opoint.x))||(floor(cpoint.y)==floor(opoint.y)))
             {
-                strz=ChangeToBinary(opoint.z-sign_z);
+                strz=ChangeToBinary(opoint.z-1);
                 strx=ChangeToBinary(opoint.x);
                 stry=ChangeToBinary(opoint.y);
                 ChangePoint(strx,stry,strz);
@@ -1091,9 +1225,11 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                 stry=ChangeToBinary(opoint.y);
                 strz=ChangeToBinary(opoint.z);
                 ChangePoint(strx,stry,strz);
-                strx=ChangeToBinary(opoint.x-sign_x);
+                strz=ChangeToBinary(opoint.z-1);
                 ChangePoint(strx,stry,strz);
-                strz=ChangeToBinary(opoint.z-sign_z);
+                strx=ChangeToBinary(opoint.x-1);
+                ChangePoint(strx,stry,strz);
+                strz=ChangeToBinary(opoint.z);
                 ChangePoint(strx,stry,strz);
             }
             else if((opoint.y-floor(opoint.y)==0)&&(opoint.x-floor(opoint.x)==1))
@@ -1102,9 +1238,11 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                 stry=ChangeToBinary(opoint.y);
                 strz=ChangeToBinary(opoint.z);
                 ChangePoint(strx,stry,strz);
-                stry=ChangeToBinary(opoint.y-sign_y);
+                stry=ChangeToBinary(opoint.y-1);
                 ChangePoint(strx,stry,strz);
-                strz=ChangeToBinary(opoint.z-sign_z);
+                strz=ChangeToBinary(opoint.z-1);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y);
                 ChangePoint(strx,stry,strz);
             }
             else if((opoint.y-floor(opoint.y)==1)&&(opoint.x-floor(opoint.x)==1))
@@ -1112,6 +1250,21 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                 strx=ChangeToBinary(opoint.x);
                 stry=ChangeToBinary(opoint.y);
                 strz=ChangeToBinary(opoint.z);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y-1);
+                ChangePoint(strx,stry,strz);
+                strz=ChangeToBinary(opoint.z-1);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y);
+                ChangePoint(strx,stry,strz);
+                strx=ChangeToBinary(opoint.x-1);
+                strz=ChangeToBinary(opoint.z);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y-1);
+                ChangePoint(strx,stry,strz);
+                strz=ChangeToBinary(opoint.z-1);
+                ChangePoint(strx,stry,strz);
+                stry=ChangeToBinary(opoint.y);
                 ChangePoint(strx,stry,strz);
             }
             else
@@ -1124,14 +1277,24 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                     stry=ChangeToBinary(opoint.y);
                     strz=ChangeToBinary(opoint.z);
                     ChangePoint(strx,stry,strz);
-                    strz=ChangeToBinary(opoint.z-sign_z);
+                    strz=ChangeToBinary(opoint.z-1);
                     ChangePoint(strx,stry,strz);
-                    stry=ChangeToBinary(opoint.y-sign_y);
-                    ChangePoint(strx,stry,strz);
+                    if(sign_z<0)
+                    {
+                        strz=ChangeToBinary(opoint.z);
+                        stry=ChangeToBinary(opoint.y-sign_y);
+                        ChangePoint(strx,stry,strz);
+                    }
+                    else
+                    {
+                        strz=ChangeToBinary(opoint.z-1);
+                        stry=ChangeToBinary(opoint.y-sign_y);
+                        ChangePoint(strx,stry,strz);
+                    }
                 }
                 else if(floor(y_comp)==y_comp)
                 {
-                    strz=ChangeToBinary(opoint.z-sign_z);
+                    strz=ChangeToBinary(opoint.z-1);
                     strx=ChangeToBinary(opoint.x);
                     stry=ChangeToBinary(opoint.y);
                     ChangePoint(strx,stry,strz);
@@ -1144,10 +1307,20 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
                     stry=ChangeToBinary(opoint.y);
                     strz=ChangeToBinary(opoint.z);
                     ChangePoint(strx,stry,strz);
-                    strz=ChangeToBinary(opoint.z-sign_z);
+                    strz=ChangeToBinary(opoint.z-1);
                     ChangePoint(strx,stry,strz);
-                    strx=ChangeToBinary(opoint.x-sign_x);
-                    ChangePoint(strx,stry,strz);
+                    if(sign_z<0)
+                    {
+                        strz=ChangeToBinary(opoint.z);
+                        strx=ChangeToBinary(opoint.x-sign_x);
+                        ChangePoint(strx,stry,strz);
+                    }
+                    else
+                    {
+                        strz=ChangeToBinary(opoint.z-1);
+                        strx=ChangeToBinary(opoint.x-sign_x);
+                        ChangePoint(strx,stry,strz);
+                    }
                 }
             }
             cpoint=opoint;
@@ -1155,5 +1328,9 @@ void Octree::GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint 
             opoint.x+=sign_x*abs(diffx/diffz);
             opoint.y+=sign_y*abs(diffy/diffz);
         }
+    }
+    else
+    {
+        cout<<"error occured in GeneralLocationEdge_SuperCoverLine"<<endl;
     }
 }
