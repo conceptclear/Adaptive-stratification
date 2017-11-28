@@ -128,8 +128,15 @@ class Octree
         void ParallelToSurfaceEdge_SuperCoverLine(OctreePoint point1, OctreePoint point2, int serial);
         //deal with the general edge by using SuperCoverLine
         void GeneralLocationEdge_SuperCoverLine(OctreePoint point1, OctreePoint point2);
+        //deal with the general edge by using Rays
+       // void GeneralLocationEdge_Rays(OctreePoint point1, OctreePoint point2);
         //use supercoverline to fullfill the inner place
-        void FacetToOctree(vector<CFacet> VectorFacet
+        void FacetToOctree_SuperCoverLine(vector<CFacet> VectorFacet
+                ,vector<CVertex> VectorPoint
+                ,float xmax,float xmin
+                ,float ymax,float ymin
+                ,float zmax,float zmin);
+        void FacetToOctree_new(vector<CFacet> VectorFacet
                 ,vector<CVertex> VectorPoint
                 ,float xmax,float xmin
                 ,float ymax,float ymin
